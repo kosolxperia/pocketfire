@@ -21,17 +21,19 @@
     		var childData = childSnapshot.val();
     		console.log(childKey);
 				console.log(childData.table_status);
-				myHtml+='<li><a href="view_category.php?table_number=1">โต๊ะ' + childSnapshot.key;
+				myHtml+='<li><a href="view_category.html?table_number=1">โต๊ะ' + childSnapshot.key;
 				//myHtml+='<span class="ui-li-count" data-table_id="' + childSnapshot.key  +'" >'+childData.table_status +'</span>';
 				myHtml+='<span class="ui-li-count" id="' + childSnapshot.key  +'" >'+childData.table_status +'</span>';
 				myHtml+='</a></li>';
 
-			}); //for each
+				}); //for each
 			//console.log(myHtml);
+		
 			$('#list_view_table').append(myHtml);
 			$('#list_view_table').listview('refresh');
 
 		});
+
 	});
 		/*
 		setInterval(check_table_ready, 10000);
