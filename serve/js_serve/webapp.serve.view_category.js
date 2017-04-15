@@ -10,7 +10,7 @@
 
 		function checkActiveTable(){
 
-			var tableNum = $('#table_num');
+			var tableNum = $('.table_num');
 			console.log('active table = '+sessionStorage.activeTable);
 
 			if(sessionStorage.activeTable){

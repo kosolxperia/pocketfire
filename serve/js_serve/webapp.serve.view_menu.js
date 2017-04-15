@@ -8,20 +8,19 @@
 		console.log('active category = '+ active_category);
 
 		var firebaseRef = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
-		var tableNum2;
+		var tableNum;
 		checkActiveTable();
 		//checkActiveCategory();
 
 		loadFirebaseData();
 
 		function checkActiveTable(){
-			console.log('checkActiveTable run...');
-			tableNum2 = $('#table_num2');
+			tableNum = $('.table_num');
 
 			if(sessionStorage.activeTable){
-				tableNum2.html('โต๊ะ '+sessionStorage.activeTable);
+				tableNum.html('โต๊ะ '+sessionStorage.activeTable);
 			}else{
-				tableNum2.html('ไม่ได้เลือกโต๊ะ');
+				tableNum.html('ไม่ได้เลือกโต๊ะ');
 			}
 
 		}
