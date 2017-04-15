@@ -62,7 +62,7 @@
 				menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
 				menuHtml += '<h1>'+ childData.menu_name +'</h1>';
 				menuHtml += '<p>'+ childData.menu_price +' บาท</p>';
-				menuHtml += '<span class="ui-li-count" data-menu_id="'+ childKey +'">'+ '000'+'</span>';
+				menuHtml += '<span class="ui-li-count" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
 				menuHtml += '</a></li>';
 
 			}); //for each
@@ -70,7 +70,7 @@
 			$('#list_view_menu').append(menuHtml);
 			$('#list_view_menu').listview('refresh');
 
-			//setEventListOnclick();
+			setEventListMenu();
 		}
 
 /*
@@ -83,9 +83,11 @@
 
 		}
 		*/
-		/*
-		$(".link_menu").on("tap", function(){
 
+	function setEventListMenu(){
+
+		$(".link_menu").on("tap", function(){
+			console.log('tapppp ja');
 			var quan_element = $(this).find("span.ui-li-count");
 			var quantity = parseInt(quan_element.text());
 
@@ -113,6 +115,10 @@
 			quan_element.attr("data-update_item","yes");
 			change_quantity = true;
 		}); //.link_menu swipeleft
+
+	}
+/*
+
 
 		$("#btn_summary_menu").on("click",function(){
 
