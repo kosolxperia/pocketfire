@@ -7,12 +7,26 @@
 		var active_category = parseInt(sessionStorage.activeCategory);
 		console.log('active category = '+ active_category);
 
+		// .equalTo use integer data !!!!
 		var firebaseRef = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
 		var tableNum;
 		checkActiveTable();
 		//checkActiveCategory();
 
 		loadFirebaseData();
+		showCategoryName();
+
+		function showCategoryName(){
+
+			//orderByKey use String!!!!
+			var firebaseRef2 = firebase.database().ref("Category").orderByKey().equalTo(String(active_category));
+			firebaseRef2.once('value', function(snapshot) {
+				snapshot.forEach(function(childSnapshot) {
+					$('#category-name').html(childSnapshot.val().category_name);
+				});
+			}); //once
+
+		}
 
 		function checkActiveTable(){
 			tableNum = $('.table_num');

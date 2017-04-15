@@ -51,11 +51,8 @@
 				var childKey = childSnapshot.key;
 				var childData = childSnapshot.val();
 
-				//console.log(childKey);
-			//	console.log(childData.category_name);
-
 				categoryHtml += '<li><a href="view_menu.html" class="categorylist" data-key="'+ childKey +'">';
-				categoryHtml += '<img src="../'+ childData.category_picture +'"/><span id="' + childKey +'">' +childData.category_name +'</span>';
+				categoryHtml += '<img src="../'+ childData.category_picture +'"/>' +childData.category_name;
 				categoryHtml += '</a></li> ';
 			}); //for each
 
