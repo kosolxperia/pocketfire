@@ -69,6 +69,12 @@
 
 			$('.categorylist').click(function(){
 					sessionStorage.activeCategory = $(this).attr('data-key');
+					/*
+					sessionStorage.activeCategory = {
+						category_id: $(this).attr('data-key'),
+						category_name:
+					};
+					*/
 					console.log('set active category= '+sessionStorage.activeCategory);
 					$.mobile.changePage( "view_menu.html");
 			}); // click function
