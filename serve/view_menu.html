@@ -12,73 +12,12 @@
 
 	<div data-role="content">
 
-		<ul data-role="listview" id="listmenu" data-inset="true" data-theme="d" >
+		<ul data-role="listview" id="list_view_menu" data-inset="true" data-theme="d" >
 
-			//หา ชื่อประเภท
-			//$sql_catname = "select category_name from Category where category_id=". $_GET['cat_id'];
-			//$res_catname = mysql_query($sql_catname) or die(mysql_error());
+			<li data-role="list-divider">  CATEGORY_NAME </li>
 
-			//$row_catname = mysql_fetch_array($res_catname);
+			
 
-
-			<li data-role="list-divider"><?=$row_catname['category_name']?></li>
-
-			<?php
-			if(isset($_GET['table_number'])){
-				$sql = "select menu_id, menu_name, menu_price, menu_picture, ";
-
-				$sql .= "(select quantity from Temp_Orders join DinningTable on ";
-				$sql .= "Temp_Orders.table_id=DinningTable.table_id ";
-				$sql .= "where Menu.menu_id = Temp_Orders.menu_id and ";
-				$sql .= "table_number like '".$_GET['table_number']. "' ";
-				$sql .= "and status like 'pending') as quantity ";
-
-				$sql .= "from Menu where category_id=". $_GET['cat_id'];
-
-			}else {
-				$sql = "select menu_id, menu_name, menu_price, menu_picture ";
-				$sql .= "from Menu where category_id=". $_GET['cat_id'];
-			}
-
-			$res = mysql_query($sql) or die (mysql_error());
-
-			while($row = mysql_fetch_array($res)){
-				?>
-				<li data-icon="false">
-					<?php
-					if(isset($_GET['table_number'])){
-						?>
-						<a class="link_menu">
-							<?php
-						}
-						?>
-						<img src="../<?=$row['menu_picture']?>"/>
-						<h1><?=$row['menu_name']?></h1>
-						<p><?=$row['menu_price']?> บาท</p>
-
-						<?php
-						$quan = 0;
-
-						if(isset($row["quantity"]) && $row["quantity"]>0){
-							$quan = $row["quantity"];
-						}
-						?>
-
-
-						<span class="ui-li-count" data-menu_id="<?=$row['menu_id']?>"><?=$quan?></span>
-
-						<?php
-						if(isset($_GET['table_number'])){
-							?>
-						</a>
-						<?php
-					}
-					?>
-
-				</li>
-				<?php
-			}
-			?>
 		</ul>
 
 	</div>

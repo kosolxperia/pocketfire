@@ -4,13 +4,19 @@
 
 
 	$(document).on("pageinit", "#page-view_menu", function(){
+		var active_category = parseInt(sessionStorage.activeCategory);
+		console.log('active category = '+ active_category);
 
+		var firebaseRef = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
+		var tableNum;
 		checkActiveTable();
-		checkActiveCategory();
+		//checkActiveCategory();
+
+		loadFirebaseData();
 
 		function checkActiveTable(){
 
-			var tableNum = $('#table_num');
+			tableNum = $('#table_num');
 
 			if(sessionStorage.activeTable){
 				tableNum.html('โต๊ะ '+sessionStorage.activeTable);
@@ -20,17 +26,50 @@
 
 		}
 
+		function loadFirebaseData(){
+			console.log('run loadFirebaseData()...');
+			firebaseRef.once('value', function(snapshot) {
+				UIUpdateListViewMenu(snapshot);
+			});  //firebase once
 
+		}
+
+		function UIUpdateListViewMenu(snapshot){
+
+			console.log('run UIUdatelistviewmenu...');
+		//	console.log(JSON.stringify(snapshot));
+			var menuHtml='';
+
+			snapshot.forEach(function(childSnapshot) {
+				var childKey = childSnapshot.key;
+				var childData = childSnapshot.val();
+				//console.log(childData.menu_picture);
+
+				menuHtml += '<li data-icon="false"><a class="link_menu">';
+				menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
+				menuHtml += '<h1>'+ childData.menu_name +'</h1>';
+				menuHtml += '<p>'+ childData.menu_price +' บาท</p>';
+				menuHtml += '<span class="ui-li-count" data-menu_id="'+ childKey +'">'+ '000'+'</span>';
+				menuHtml += '</a></li>';
+
+			}); //for each
+			//console.log(menuHtml);
+			$('#list_view_menu').append(menuHtml);
+			$('#list_view_menu').listview('refresh');
+
+			//setEventListOnclick();
+		}
+
+/*
 		function checkActiveCategory(){
 
 			if(sessionStorage.activeCategory){
-				tableNum.attr('data-cat_id') = sessionStorage.activeCategory;
+				tableNum.attr('data-cat_id',sessionStorage.activeCategory);
 				console.log('sessionStorage.cativeCategory = ' +sessionStorage.activeCategory);
 			}
 
-
-
 		}
+		*/
 		/*
 		$(".link_menu").on("tap", function(){
 
