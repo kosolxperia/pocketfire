@@ -3,8 +3,6 @@
 	$(document).on("pageinit", "#page-view_table", function(){
 
 		var firebaseRef = firebase.database().ref("DinningTable");
-		var dataKey;
-		var tableStatus;
 
 		loadFirebaseData();
 		onFirebaseChange();
@@ -14,19 +12,20 @@
 			firebaseRef.once('value', function(snapshot) {
 				UIUpdateListViewTable(snapshot);
 			}); // firebaseRef.once
+
 		}
 
 		function onFirebaseChange(){
 
 			firebaseRef.on('child_changed', function(data) {
 				console.log('child change ja....5555 '+data.key + ' and ' + data.val().table_status);
-				dataKey = data.key;
-				tableStatus = data.val().table_status;
-				UIUpdateTableStatus(dataKey, tableStatus);
+				UIUpdateTableStatus(data.key, data.val().table_status);
 			});
+
 		}
 
 		function UIUpdateListViewTable(snapshot) {
+
 			var childKey;
 			var childData;
 			var myHtml='';
@@ -45,6 +44,15 @@
 			$('#list_view_table').append(myHtml);
 			$('#list_view_table').listview('refresh');
 
+			setEventListOnclick();
+		}
+
+		function UIUpdateTableStatus(key, status){
+				$('#' + key).text(status);
+		}
+
+		function setEventListOnclick(){
+
 			$('.mylist').click(function(){
 					sessionStorage.activeTable = $(this).attr('data-key');
 					console.log('sessionStorage = '+$(this).attr('data-key'));
@@ -53,14 +61,6 @@
 
 		}
 
-		function UIUpdateTableStatus(key, status){
-				$('#' + key).text(status);
-		}
-
-		function gotoViewCategory(key){
-			console.log('function gotoViewCategory... key = ' +key);
-			//view_category.html?table_number=1
-		}
 
 }); //page init
 
