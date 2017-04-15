@@ -2,7 +2,17 @@
 
 	$(document).on("pageinit", "#page-view_category", function(){
 
-		var hearderCategory = $('#header-category');
+
+		var tableNum = $('#table_num');
+		console.log(tableNum);
+		console.log('page view_category session = '+sessionStorage.activeTable);
+
+		if(sessionStorage.activeTable){
+			tableNum.html('โต๊ะ '+sessionStorage.activeTable);
+		}else{
+			tableNum.html('ไม่ได้เลือกโต๊ะ');
+		}
+
 
 		var firebaseRef = firebase.database().ref("Category");
 

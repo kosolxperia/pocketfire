@@ -2,18 +2,8 @@
 	<div data-role="header" data-position="fixed">
 		<a data-rel="back" data-icon="back">กลับ</a>
 
-		<?php
-		if(!isset($_GET['table_number'])){
-			?>
-			<h1 id="header-category">ไม่ได้เลือกโต๊ะ</h1>
-			<?php
-		}else {
-			?>
-			<h1>โต๊ะ <span id="table_num"><?=$_GET['table_number']?></span></h1>
+			<h1><span id="table_num"></span></h1>
 			<a href="#" id="btn_summary_category" data-icon="grid" >สรุป</a>
-			<?php
-		}
-		?>
 
 	</div>
 
@@ -21,7 +11,7 @@
 
 		<ul data-role="listview" data-inset="true" id="list_view_category">
 			<li data-role="list-divider">ประเภท</li>
-	
+
 				</ul>
 
 			</div>
