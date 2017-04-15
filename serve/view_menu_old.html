@@ -5,22 +5,32 @@
 		<h1><span id="table_num" data-cat_id=""></span></h1>
 		<a href="#" id="btn_summary_category" data-icon="grid" >สรุป</a>
 
-<!--
+		<?php
+		if(!isset($_GET['table_number'])){
+			?>
+			<h1>ไม่ได้เลือกโต๊ะ</h1>
+			<?php
+		}else {
+			?>
 			<h1>โต๊ะ <span id="table_num" data-cat_id="<?=$_GET['cat_id']?>"><?=$_GET['table_number']?></span></h1>
--->
+			<a href="#" id="btn_summary_menu" data-icon="grid" >สรุป</a>
+			<?php
+		}
+		?>
+
 	</div>
 
 	<div data-role="content">
 
 		<ul data-role="listview" id="listmenu" data-inset="true" data-theme="d" >
-
+			<?php
 			//หา ชื่อประเภท
-			//$sql_catname = "select category_name from Category where category_id=". $_GET['cat_id'];
-			//$res_catname = mysql_query($sql_catname) or die(mysql_error());
+			$sql_catname = "select category_name from Category where category_id=". $_GET['cat_id'];
+			$res_catname = mysql_query($sql_catname) or die(mysql_error());
 
-			//$row_catname = mysql_fetch_array($res_catname);
+			$row_catname = mysql_fetch_array($res_catname);
 
-
+			?>
 			<li data-role="list-divider"><?=$row_catname['category_name']?></li>
 
 			<?php
