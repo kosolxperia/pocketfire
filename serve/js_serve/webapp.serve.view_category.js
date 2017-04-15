@@ -30,39 +30,54 @@
 
 		}
 
-		function UIUpdateListViewCategory(snapshot){
-			snapshot.forEach(function(childSnapshot) {
-			var childKey = childSnapshot.key;
-			var childData = childSnapshot.val();
-			console.log(childKey);
-			console.log(childData.category_name);
-
-			categoryHtml += '<li><a href="view_menu.html">';
-			categoryHtml += '<img src="../'+ childData.category_picture +'"/><span id="' + childKey +'">' +childData.category_name +'</span>';
-			categoryHtml += '</a></li> ';
-			}); //for each
-		//console.log(myHtml);
-		$('#list_view_category').append(categoryHtml);
-		$('#list_view_category').listview('refresh');
-		}
-
 		function onFirebaseChange(){
 
 			firebaseRef.on('child_changed', function(data) {
 				console.log('child change '+ data.key + ' and ' + data.val().category_name);
-					$('#'+data.key).text(data.val().category_name);
-					//$("#list_view_table a").find("span.ui-li-count").attr("data-table_id")
-
+					//$('#'+data.key).text(data.val().category_name);
+					UIUpdateCategoryName(data.key, data.val().category_name);
 			});
 
 		}
 
-		var categoryHtml='';
+		function UIUpdateCategoryName(key, status){
+			$('#' + key).text(status);
+		}
+
+		function UIUpdateListViewCategory(snapshot){
+
+			var categoryHtml='';
+
+			snapshot.forEach(function(childSnapshot) {
+				var childKey = childSnapshot.key;
+				var childData = childSnapshot.val();
+
+				console.log(childKey);
+				console.log(childData.category_name);
+
+				categoryHtml += '<li><a href="view_menu.html" class="categorylist">';
+				categoryHtml += '<img src="../'+ childData.category_picture +'"/><span id="' + childKey +'">' +childData.category_name +'</span>';
+				categoryHtml += '</a></li> ';
+			}); //for each
+
+			$('#list_view_category').append(categoryHtml);
+			$('#list_view_category').listview('refresh');
+
+			setEventListOnclick();
+		}
+
+		function setEventListOnclick(){
+
+			$('.categorylist').click(function(){
+
+					$.mobile.changePage( "view_menu.html");
+			}); // click function
 
 
+		}
 
 
-
+		/*
 		$("#btn_summary_category").on("click",function(){
 
 			$.mobile.changePage("view_summary.php", {
@@ -72,6 +87,7 @@
 			});
 
 		});
+		*/
 
 	});  //pageinit
 

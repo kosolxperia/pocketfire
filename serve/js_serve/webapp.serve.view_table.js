@@ -35,7 +35,7 @@
 				childData = childSnapshot.val();
 				console.log(childKey);
 				console.log(childData.table_status);
-				myHtml+='<li><a href="#" class="mylist" data-key="'+ childKey +'">โต๊ะ' + childKey;
+				myHtml+='<li><a href="#" class="tablelist" data-key="'+ childKey +'">โต๊ะ ' + childKey;
 				myHtml+='<span class="ui-li-count" id="' + childKey  +'" >'+ childData.table_status +'</span>';
 				myHtml+='</a></li>';
 			}); //for each
@@ -53,7 +53,7 @@
 
 		function setEventListOnclick(){
 
-			$('.mylist').click(function(){
+			$('.tablelist').click(function(){
 					sessionStorage.activeTable = $(this).attr('data-key');
 					console.log('sessionStorage = '+$(this).attr('data-key'));
 					$.mobile.changePage( "view_category.html");
