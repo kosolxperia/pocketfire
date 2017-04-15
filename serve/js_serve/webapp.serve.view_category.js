@@ -17,12 +17,19 @@
 				console.log(childData.category_name);
 
 				categoryHtml += '<li><a href="view_menu.html">';
-				categoryHtml += '<img src="../'+ childData.category_picture +'"/>' + childData.category_name;
+				categoryHtml += '<img src="../'+ childData.category_picture +'"/><span id="' + childKey +'">' +childData.category_name +'</span>';
 				categoryHtml += '</a></li>';
 				}); //for each
 			//console.log(myHtml);
 			$('#list_view_category').append(categoryHtml);
 			$('#list_view_category').listview('refresh');
+
+		});  //firebase once
+
+		firebaseRef.on('child_changed', function(data) {
+  			console.log('child change '+ data.key + ' and ' + data.val().category_name);
+				$('#'+data.key).text(data.val().category_name);
+				//$("#list_view_table a").find("span.ui-li-count").attr("data-table_id")
 
 		});
 
