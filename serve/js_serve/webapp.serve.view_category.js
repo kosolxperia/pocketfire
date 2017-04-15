@@ -18,7 +18,7 @@
 
 				categoryHtml += '<li><a href="view_menu.html">';
 				categoryHtml += '<img src="../'+ childData.category_picture +'"/><span id="' + childKey +'">' +childData.category_name +'</span>';
-				categoryHtml += '</a></li>';
+				categoryHtml += '</a></li> ';
 				}); //for each
 			//console.log(myHtml);
 			$('#list_view_category').append(categoryHtml);
