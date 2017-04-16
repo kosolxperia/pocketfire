@@ -78,20 +78,17 @@
 
 				menuHtml += '<li data-icon="false"><a class="link_menu">';
 				menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
-				//menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
-					menuHtml += '<h1>'+ childData.menu_name +'</h1>';
+				menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
 				menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
-				//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
-				menuHtml += '<span class="ui-li-count" id="abc" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
+				menuHtml += '<span class="ui-li-count" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
 				menuHtml += '</a></li>';
-	//alert($('#'+childKey).html());
+
 			}); //for each
 			//console.log(menuHtml);
 			$('#list_view_menu').append(menuHtml);
 			$('#list_view_menu').listview('refresh');
 
 			setEventListMenu();
-
 		}
 
 	function setEventListMenu(){
@@ -149,42 +146,17 @@
 		console.log('check pending order....');
 		var firebaseRef4 = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
 		firebaseRef4.once('value', function(snapshot) {
-			//console.log(JSON.stringify(snapshot));
+			console.log(JSON.stringify(snapshot));
 			snapshot.forEach(function(childSnapshot) {
-
-				console.log('found pending order');
-				console.log(JSON.stringify(childSnapshot));
-				//console.log(JSON.stringify(childSnapshot.order[0].menu_id));
-				//childSnapshot.
-				//var childKey = childSnapshot.key;
-
+				var childKey = childSnapshot.key;
 				var childData = childSnapshot.val();
-				console.log('childData = '+JSON.stringify(childData));
-			//	console.log(childData.order[1].menu_id);
-
-
-				var arrayLength = childData.order.length;
-					for (var i = 0; i < arrayLength; i++) {
-
-					    console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
-							UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
-					    //Do something
-					}
-
-
-
-
-
 
 			}); //for each
 		});  //firebase once
 	}
 
-	function UIUpdateQuantity(menu_id, quantity){
-		console.log('fn UIUpdateQuantity....');
-		//$('#'+menu_id).html(quantity);
-		$('#abc').text(quantity);
-	//	console.log(a);
+	function UIUpdateQuantity(data){
+		$('#'+data.)
 
 	}
 
