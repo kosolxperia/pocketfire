@@ -64,9 +64,28 @@
 			//Temp_Orders
 			firebaseRefTemp_Orders.on('child_changed', function(data) {
 			var childData = data.val();
-			console.log('child change childData = '+JSON.stringify(childData));
-			console.log(childData.order[0].menu_id + ' and ' + childData.order[0].quantity );
-			UIUpdateQuantity(childData.order[0].menu_id, childData.order[0].quantity);
+			console.log('child CHANGE childData = '+JSON.stringify(childData));
+
+			var arrayLength = childData.order.length;
+			for (var i = 0; i < arrayLength; i++) {
+
+				console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+				UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+
+			}
+
+			});
+
+			firebaseRefTemp_Orders.on('child_added', function(data) {
+			var childData = data.val();
+			console.log('child ADD childData = '+JSON.stringify(childData));
+			var arrayLength = childData.order.length;
+			for (var i = 0; i < arrayLength; i++) {
+
+				console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+				UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+
+			}
 			});
 
 
