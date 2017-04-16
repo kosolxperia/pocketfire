@@ -14,7 +14,9 @@
 		//checkActiveCategory();
 
 		loadFirebaseData();
+		onFirebaseChange();
 		showCategoryName();
+		setEventBtnSummaryMenu();
 
 		function showCategoryName(){
 
@@ -47,6 +49,21 @@
 
 		}
 
+		function onFirebaseChange(){
+
+			firebaseRef.on('child_changed', function(data) {
+				console.log('child change '+ data.key + ' and ' + data.val().category_name);
+					//$('#'+data.key).text(data.val().category_name);
+					UIUpdateMenuName(data.key, data.val());
+			});
+
+		}
+
+		function UIUpdateMenuName(key, data){
+				$('#' + key).text(data.menu_name);
+				$('#' + key +'price').text(data.menu_price);
+		}
+
 		function UIUpdateListViewMenu(snapshot){
 
 			console.log('run UIUdatelistviewmenu...');
@@ -60,8 +77,8 @@
 
 				menuHtml += '<li data-icon="false"><a class="link_menu">';
 				menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
-				menuHtml += '<h1>'+ childData.menu_name +'</h1>';
-				menuHtml += '<p>'+ childData.menu_price +' บาท</p>';
+				menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
+				menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
 				menuHtml += '<span class="ui-li-count" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
 				menuHtml += '</a></li>';
 
@@ -72,17 +89,6 @@
 
 			setEventListMenu();
 		}
-
-/*
-		function checkActiveCategory(){
-
-			if(sessionStorage.activeCategory){
-				tableNum.attr('data-cat_id',sessionStorage.activeCategory);
-				console.log('sessionStorage.cativeCategory = ' +sessionStorage.activeCategory);
-			}
-
-		}
-		*/
 
 	function setEventListMenu(){
 
@@ -117,62 +123,43 @@
 		}); //.link_menu swipeleft
 
 	}
-/*
 
+	function setEventBtnSummaryMenu(){
 
 		$("#btn_summary_menu").on("click",function(){
-
+			console.log('button summary click...');
 			if(change_quantity === true){
 				// มีการเปลี่ยนแปลงออร์เดอร์ ให้ส่งข้อมูลออร์เดอร์ไปที่ฐานข้อมูลก่อน
-				var json_order = createJSON_Order();
-
-				$.ajax({
-					type: "POST",
-					url: "send_order.php",
-					data: { "order": json_order },
-					success: function(data){
-						change_quantity = false;
-
-						$.mobile.changePage( "view_summary.php", {
-
-							changeHash: false,
-							data: {
-									cat_id: $("#table_num").attr("data-cat_id"),
-									table_number: $("#table_num").text()
-							}
-						});
-					},
-					error: function() {
-						alert("เกิดข้อผิดพลาด");
-					}
-				});
-
+				sendOrder();
+				//$.mobile.changePage( "view_summary.html");
 			}else {
 				//ไม่มีการเปลี่ยนแปลงออร์เดอร์ ให้เปลี่ยน page ได้เลย
-				$.mobile.changePage("view_summary.php", {
-
-					changeHash: false,
-					data: {
-							cat_id: $("#table_num").attr("data-cat_id"),
-							table_number: $("#table_num").text()
-					}
-				});
+				$.mobile.changePage("view_summary.html");
 			}
 
 		}); //btn_summary_menu
 
-	}); //pageinit page-view_menu
+	}
 
-	function createJSON_Order(){
+	function checkPendingOrder(){
+		console.log('check pending order....');
+		var firebaseRef4 = firebase.database().ref("Temp_Orders");
+		
+	}
 
+	function sendOrder(){
+
+		var firebaseRef3 = firebase.database().ref("Temp_Orders")
+		console.log('sendOrder....');
 		var jsonOrder = {};
 
-		jsonOrder.table_number = $("#table_num").text();
+		var d = new Date();
+		var current_time = d.getFullYear()+"-"+ d.getMonth()+"-"+d.getDate()+" "+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+		jsonOrder.table_number = sessionStorage.activeTable;
+		jsonOrder.time = current_time;
 		jsonOrder.order = [];
 
-		$("#listmenu .ui-li-count[data-update_item]").each(function(index){
-
-
+		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
 			jsonOrder.order.push({
 									menu_id: $(this).attr("data-menu_id"),
 									quantity: $(this).text()
@@ -180,14 +167,17 @@
 
 		});
 		//แปลงข้อมูลชนิดออบเจ็กตให้เป็นข้อมูล JSON
-		jsonOrder = JSON.stringify(jsonOrder);
-		console.log(jsonOrder);
+		//jsonOrder = JSON.stringify(jsonOrder);
+		//console.log(jsonOrder);
 
-		return jsonOrder;
+		firebaseRef3.push(jsonOrder);
+		console.log('send order success');
+
+		//$.mobile.changePage( "view_summary.html");
 
 	}
 
-
+/*
 	$(document).on("pagebeforehide", "#page-view_menu", function(){
 
 		if(change_quantity === false){
