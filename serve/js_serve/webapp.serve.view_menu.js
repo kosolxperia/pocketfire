@@ -17,7 +17,7 @@
 		onFirebaseChange();
 		showCategoryName();
 		setEventBtnSummaryMenu();
-		checkPendingOrder();
+		//checkPendingOrder();
 
 		function showCategoryName(){
 
@@ -48,7 +48,7 @@
 				UIUpdateListViewMenu(snapshot);
 			});  //firebase once
 
-			//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+			firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
 
 		}
 
@@ -60,20 +60,15 @@
 					UIUpdateMenuName(data.key, data.val());
 			});
 
-/*
+
 			//Temp_Orders
 			firebaseRefTemp_Orders.on('child_changed', function(data) {
-				//console.log('child change '+ data.key + ' and ' + data.val().category_name);
-					//$('#'+data.key).text(data.val().category_name);
-					var childData = data.val();
-				console.log('child change childData = '+JSON.stringify(childData));
-
-				//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
-			//	UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+			var childData = data.val();
+			console.log('child change childData = '+JSON.stringify(childData));
 			console.log(childData.order[0].menu_id + ' and ' + childData.order[0].quantity );
 			UIUpdateQuantity(childData.order[0].menu_id, childData.order[0].quantity);
 			});
-			*/
+
 
 		}
 
@@ -108,6 +103,9 @@
 			$('#list_view_menu').listview('refresh');
 
 			setEventListMenu();
+
+			//add delay for loadcomplete then check pending order
+			checkPendingOrder();
 
 		}
 
