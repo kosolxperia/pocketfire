@@ -231,23 +231,62 @@
 		jsonOrder.time = current_time;
 		jsonOrder.order = [];
 
+		var oldorder;
+		var update_order = [];
+		var menuId;
+		var newQuan;
+
 		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
 
 			if($(this).attr("data-childkey")){
 			// exits in Temp_Orders
 			console.log('found old order.......');
 			childkey = $(this).attr("data-childkey");
+			menuId = $(this).attr("data-menu_id");
+			newQuan = $(this).text();
 			//alert(childkey);
 			//firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey + "/order/" +$(this).attr("data-menu_id"));
 			firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
 
+// ***
+
+firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
+	oldorder = snapshot.val();
+	$.each(oldorder,function(index,value){
+			console.log('menu id = '+menuId);
+			console.log('DB old menu id = '+ oldorder[index].menu_id);
+			console.log('newquan ='+newQuan);
+			console.log('DB old quan = '+oldorder[index].quantity);
+		  //console.log(index + ": " + value.menu_id);
+		  //console.log(oldorder[index].quantity);
+		  if(oldorder[index].menu_id == menuId && oldorder[index].quantity != newQuan){
+			  console.log('old menu id == menuId ja and quan chang ja');
+			  oldorder[index].quantity = newQuan;
+			  oldorder[index].edit_time = current_time;
+			  console.log('result = '+JSON.stringify(oldorder));
+			  update_order[index]=oldorder[index];
+		  }
+
+	});
+
+
+
+});
+
+
+//***
+
+/*
 			jsonUpdateOrder.order.push({
 							menu_id: $(this).attr("data-menu_id"),
 							quantity: $(this).text(),
 							edit_time: current_time
 						 });
+						 */
 
-			firebaseRefUpdateTemp_Orders.update(jsonUpdateOrder.order);
+		//	firebaseRefUpdateTemp_Orders.update(jsonUpdateOrder.order);
+
+		//firebaseRefUpdateTemp_Orders.set(jsonUpdateOrder.order);
 
 
 /*
@@ -267,7 +306,9 @@
 								 });
 			}
 
-		});
+		});  // list view menu each ******
+
+		console.log(JSON.stringify(oldorder));
 
 		if(jsonOrder.order.length > 0){
 			firebaseRefTemp_Orders.push(jsonOrder);
