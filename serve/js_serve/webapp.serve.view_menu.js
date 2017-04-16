@@ -1,17 +1,17 @@
 (function($){
 
 	var change_quantity = false;
-
+	var firebaseRefMenu;
+	var firebaseRefTemp_Orders;
 
 	$(document).on("pageinit", "#page-view_menu", function(){
 		var active_category = parseInt(sessionStorage.activeCategory);
 		console.log('active category = '+ active_category);
 
 		// .equalTo use integer data !!!!
-		var firebaseRef = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
+		firebaseRefMenu = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
 		var tableNum;
 		checkActiveTable();
-		//checkActiveCategory();
 
 		loadFirebaseData();
 		onFirebaseChange();
@@ -44,19 +44,36 @@
 
 		function loadFirebaseData(){
 			console.log('run loadFirebaseData()...');
-			firebaseRef.once('value', function(snapshot) {
+			firebaseRefMenu.once('value', function(snapshot) {
 				UIUpdateListViewMenu(snapshot);
 			});  //firebase once
+
+			//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
 
 		}
 
 		function onFirebaseChange(){
 
-			firebaseRef.on('child_changed', function(data) {
+			firebaseRefMenu.on('child_changed', function(data) {
 				console.log('child change '+ data.key + ' and ' + data.val().category_name);
 					//$('#'+data.key).text(data.val().category_name);
 					UIUpdateMenuName(data.key, data.val());
 			});
+
+/*
+			//Temp_Orders
+			firebaseRefTemp_Orders.on('child_changed', function(data) {
+				//console.log('child change '+ data.key + ' and ' + data.val().category_name);
+					//$('#'+data.key).text(data.val().category_name);
+					var childData = data.val();
+				console.log('child change childData = '+JSON.stringify(childData));
+
+				//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+			//	UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+			console.log(childData.order[0].menu_id + ' and ' + childData.order[0].quantity );
+			UIUpdateQuantity(childData.order[0].menu_id, childData.order[0].quantity);
+			});
+			*/
 
 		}
 
@@ -147,34 +164,24 @@
 
 	function checkPendingOrder(){
 		console.log('check pending order....');
-		var firebaseRef4 = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-		firebaseRef4.once('value', function(snapshot) {
-			//console.log(JSON.stringify(snapshot));
+		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+		firebaseRefTemp_Orders.once('value', function(snapshot) {
+
 			snapshot.forEach(function(childSnapshot) {
 
 				console.log('found pending order');
 				console.log(JSON.stringify(childSnapshot));
-				//console.log(JSON.stringify(childSnapshot.order[0].menu_id));
-				//childSnapshot.
-				//var childKey = childSnapshot.key;
 
 				var childData = childSnapshot.val();
-				console.log('childData = '+JSON.stringify(childData));
-			//	console.log(childData.order[1].menu_id);
-
+			//	console.log('childData = '+JSON.stringify(childData));
 
 				var arrayLength = childData.order.length;
-					for (var i = 0; i < arrayLength; i++) {
+				for (var i = 0; i < arrayLength; i++) {
 
-					    console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
-							UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
-					    //Do something
-					}
+					console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 
-
-
-
-
+				}
 
 			}); //for each
 		});  //firebase once
@@ -183,15 +190,11 @@
 	function UIUpdateQuantity(menu_id, quantity){
 		console.log('fn UIUpdateQuantity....');
 		var a= $('#'+menu_id+'quan').text(quantity);
-		//$('#abc').text(quantity);
-		console.log(a);
-	$('#list_view_menu').listview('refresh');
-
 	}
 
 	function sendOrder(){
 
-		var firebaseRef3 = firebase.database().ref("Temp_Orders")
+		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
 		var jsonOrder = {};
 
@@ -212,7 +215,7 @@
 		//jsonOrder = JSON.stringify(jsonOrder);
 		//console.log(jsonOrder);
 
-		firebaseRef3.push(jsonOrder);
+		firebaseRefTemp_Orders.push(jsonOrder);
 		console.log('send order success');
 
 		//$.mobile.changePage( "view_summary.html");
