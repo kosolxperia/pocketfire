@@ -199,9 +199,9 @@
 					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 					console.log('key is ' + childSnapshot.key);
 					//	console.log('element is ='+$('#'+childSnapshot.key));
-					$('#'+childData.order[i].menu_id).attr('data-childkey',childSnapshot.key);
-					//$('h1').attr('data-childkey',childSnapshot.key);
-					//alert($('#1').text());
+					//$('#'+childData.order[i].menu_id).attr('data-childkey',childSnapshot.key);
+					$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
+
 
 				}
 
@@ -218,6 +218,8 @@
 
 		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
+		var jsonUpdateOrder = {};
+		var childkey; // for old order
 		var jsonOrder = {};
 
 		var d = new Date();
@@ -226,19 +228,47 @@
 		jsonOrder.time = current_time;
 		jsonOrder.order = [];
 
+		jsonUpdateOrder.table_number = sessionStorage.activeTable;
+		jsonUpdateOrder.time = current_time;
+		jsonUpdateOrder.order = [];
+
 		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
+			/*
+			if($(this).attr("data-childkey")){
+			// exits in Temp_Orders
+			childkey = $(this).attr("data-childkey");
+			jsonUpdateOrder.order.push({
+									menu_id: $(this).attr("data-menu_id"),
+									quantity: $(this).text()
+								 });
+			} else{
+			// new order
+			jsonOrder.order.push({
+									menu_id: $(this).attr("data-menu_id"),
+									quantity: $(this).text()
+								 });
+			}
+			*/
 			jsonOrder.order.push({
 									menu_id: $(this).attr("data-menu_id"),
 									quantity: $(this).text()
 								 });
 
 		});
-		//แปลงข้อมูลชนิดออบเจ็กตให้เป็นข้อมูล JSON
-		//jsonOrder = JSON.stringify(jsonOrder);
-		//console.log(jsonOrder);
 
 		firebaseRefTemp_Orders.push(jsonOrder);
 		console.log('send order success');
+
+		/*
+		if(jsonUpdateOrder.order[0]){
+		// have item for update
+		var firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders"+childKey);
+		jsonUpdateOrder.order.push({
+								menu_id: $(this).attr("data-menu_id"),
+								quantity: $(this).text()
+							 });
+		}
+		*/
 
 		//$.mobile.changePage( "view_summary.html");
 
