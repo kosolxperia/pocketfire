@@ -17,6 +17,7 @@
 		onFirebaseChange();
 		showCategoryName();
 		setEventBtnSummaryMenu();
+		checkPendingOrder();
 
 		function showCategoryName(){
 
@@ -143,8 +144,15 @@
 
 	function checkPendingOrder(){
 		console.log('check pending order....');
-		var firebaseRef4 = firebase.database().ref("Temp_Orders");
-		
+		var firebaseRef4 = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+		firebaseRef4.once('value', function(snapshot) {
+			console.log(JSON.stringify(snapshot));
+			snapshot.forEach(function(childSnapshot) {
+				var childKey = childSnapshot.key;
+				var childData = childSnapshot.val();
+
+			}); //for each
+		});  //firebase once
 	}
 
 	function sendOrder(){
