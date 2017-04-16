@@ -78,11 +78,11 @@
 
 				menuHtml += '<li data-icon="false"><a class="link_menu">';
 				menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
-				//menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
-					menuHtml += '<h1>'+ childData.menu_name +'</h1>';
+				menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
+				//menuHtml += '<h1>'+ childData.menu_name +'</h1>';
 				menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
 				//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
-				menuHtml += '<span class="ui-li-count" id="abc" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
+				menuHtml += '<span class="ui-li-count" id="'+ childKey +'quan" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
 				menuHtml += '</a></li>';
 	//alert($('#'+childKey).html());
 			}); //for each
@@ -182,9 +182,10 @@
 
 	function UIUpdateQuantity(menu_id, quantity){
 		console.log('fn UIUpdateQuantity....');
-		//$('#'+menu_id).html(quantity);
-		$('#abc').text(quantity);
-	//	console.log(a);
+		var a= $('#'+menu_id+'quan').text(quantity);
+		//$('#abc').text(quantity);
+		console.log(a);
+	$('#list_view_menu').listview('refresh');
 
 	}
 
