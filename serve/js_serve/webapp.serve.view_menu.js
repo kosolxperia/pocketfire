@@ -43,7 +43,7 @@
 		}
 
 		function loadFirebaseData(){
-			console.log('run loadFirebaseData()...');
+			//console.log('run loadFirebaseData()...');
 			firebaseRefMenu.once('value', function(snapshot) {
 				UIUpdateListViewMenu(snapshot);
 			});  //firebase once
@@ -78,11 +78,12 @@
 
 			firebaseRefTemp_Orders.on('child_added', function(data) {
 			var childData = data.val();
-			console.log('child ADD childData = '+JSON.stringify(childData));
+			//console.log('child ADD childData = '+JSON.stringify(childData));
+			console.log('child ADD');
 			var arrayLength = childData.order.length;
 			for (var i = 0; i < arrayLength; i++) {
 
-				console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+				//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
 				UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 
 			}
@@ -187,7 +188,7 @@
 			snapshot.forEach(function(childSnapshot) {
 
 				console.log('found pending order');
-				console.log(JSON.stringify(childSnapshot));
+				//console.log(JSON.stringify(childSnapshot));
 
 				var childData = childSnapshot.val();
 				//console.log('childData = '+JSON.stringify(childData));
@@ -218,7 +219,9 @@
 
 		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
+		var firebaseRefUpdateTemp_Orders;
 		var jsonUpdateOrder = {};
+		jsonUpdateOrder.order= [];
 		var childkey; // for old order
 		var jsonOrder = {};
 
@@ -228,47 +231,53 @@
 		jsonOrder.time = current_time;
 		jsonOrder.order = [];
 
-		jsonUpdateOrder.table_number = sessionStorage.activeTable;
-		jsonUpdateOrder.time = current_time;
-		jsonUpdateOrder.order = [];
-
 		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
 
 			if($(this).attr("data-childkey")){
 			// exits in Temp_Orders
 			console.log('found old order.......');
 			childkey = $(this).attr("data-childkey");
-			alert(childkey);
+			//alert(childkey);
+			//firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey + "/order/" +$(this).attr("data-menu_id"));
+			firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
+
 			jsonUpdateOrder.order.push({
-									menu_id: $(this).attr("data-menu_id"),
-									quantity: $(this).text()
-								 });
+							menu_id: $(this).attr("data-menu_id"),
+							quantity: $(this).text(),
+							edit_time: current_time
+						 });
+
+			firebaseRefUpdateTemp_Orders.update(jsonUpdateOrder.order);
+
+
+/*
+			firebaseRefUpdateTemp_Orders.update({
+				menu_id: $(this).attr("data-menu_id"),
+				quantity: $(this).text(),
+				edit_time: current_time
+			});
+*/
+
+
 			} else{
 			// new order
-			jsonOrder.order.push({
+					jsonOrder.order.push({
 									menu_id: $(this).attr("data-menu_id"),
 									quantity: $(this).text()
 								 });
 			}
 
-
-			/*
-			//this work
-			jsonOrder.order.push({
-									menu_id: $(this).attr("data-menu_id"),
-									quantity: $(this).text()
-								 });
-			*/
-
 		});
 
-		firebaseRefTemp_Orders.push(jsonOrder);
-		console.log('send order success');
+		if(jsonOrder.order.length > 0){
+			firebaseRefTemp_Orders.push(jsonOrder);
+			console.log('add new order success');
+		}
 
-
+/*
 		if(jsonUpdateOrder.order[0]){
 		// have item for update
-		var firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey);
+		firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey);
 
 		var arrayLength = jsonUpdateOrder.order.length;
 		for (var i = 0; i < arrayLength; i++) {
@@ -277,7 +286,7 @@
 
 
 		}
-
+*/
 
 		//$.mobile.changePage( "view_summary.html");
 
