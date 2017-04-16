@@ -49,7 +49,7 @@
 			});  //firebase once
 
 			firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-
+			//firebaseRefTemp_Orders.orderByChild("time");
 		}
 
 		function onFirebaseChange(){
@@ -190,13 +190,18 @@
 				console.log(JSON.stringify(childSnapshot));
 
 				var childData = childSnapshot.val();
-			//	console.log('childData = '+JSON.stringify(childData));
+				//console.log('childData = '+JSON.stringify(childData));
 
 				var arrayLength = childData.order.length;
 				for (var i = 0; i < arrayLength; i++) {
 
 					console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
 					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+					console.log('key is ' + childSnapshot.key);
+					//	console.log('element is ='+$('#'+childSnapshot.key));
+					$('#'+childData.order[i].menu_id).attr('data-childkey',childSnapshot.key);
+					//$('h1').attr('data-childkey',childSnapshot.key);
+					//alert($('#1').text());
 
 				}
 
