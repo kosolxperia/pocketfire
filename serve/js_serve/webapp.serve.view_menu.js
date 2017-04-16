@@ -233,10 +233,12 @@
 		jsonUpdateOrder.order = [];
 
 		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
-			/*
+
 			if($(this).attr("data-childkey")){
 			// exits in Temp_Orders
+			console.log('found old order.......');
 			childkey = $(this).attr("data-childkey");
+			alert(childkey);
 			jsonUpdateOrder.order.push({
 									menu_id: $(this).attr("data-menu_id"),
 									quantity: $(this).text()
@@ -248,27 +250,34 @@
 									quantity: $(this).text()
 								 });
 			}
-			*/
+
+
+			/*
+			//this work
 			jsonOrder.order.push({
 									menu_id: $(this).attr("data-menu_id"),
 									quantity: $(this).text()
 								 });
+			*/
 
 		});
 
 		firebaseRefTemp_Orders.push(jsonOrder);
 		console.log('send order success');
 
-		/*
+
 		if(jsonUpdateOrder.order[0]){
 		// have item for update
-		var firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders"+childKey);
-		jsonUpdateOrder.order.push({
-								menu_id: $(this).attr("data-menu_id"),
-								quantity: $(this).text()
-							 });
+		var firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey);
+
+		var arrayLength = jsonUpdateOrder.order.length;
+		for (var i = 0; i < arrayLength; i++) {
+			firebaseRefUpdateTemp_Orders.update(jsonUpdateOrder.order[i]);
 		}
-		*/
+
+
+		}
+
 
 		//$.mobile.changePage( "view_summary.html");
 
