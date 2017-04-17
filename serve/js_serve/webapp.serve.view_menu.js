@@ -95,6 +95,8 @@
 		function UIUpdateMenuName(key, data){
 				$('#' + key).text(data.menu_name);
 				$('#' + key +'price').text(data.menu_price);
+				$('#' + key +'img').attr('src','../' + data.menu_picture);
+
 		}
 
 		function UIUpdateListViewMenu(snapshot){
@@ -109,9 +111,9 @@
 				//console.log(childData.menu_picture);
 
 				menuHtml += '<li data-icon="false"><a class="link_menu">';
-				menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
+				//menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
+				menuHtml += '<img id="' + childKey +'img" src="../'+ childData.menu_picture +'"/>';
 				menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
-				//menuHtml += '<h1>'+ childData.menu_name +'</h1>';
 				menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
 				//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
 				menuHtml += '<span class="ui-li-count" id="'+ childKey +'quan" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
@@ -188,10 +190,8 @@
 			snapshot.forEach(function(childSnapshot) {
 
 				console.log('found pending order');
-				//console.log(JSON.stringify(childSnapshot));
 
 				var childData = childSnapshot.val();
-				//console.log('childData = '+JSON.stringify(childData));
 
 				var arrayLength = childData.order.length;
 				for (var i = 0; i < arrayLength; i++) {
@@ -199,8 +199,8 @@
 					console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
 					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 					console.log('key is ' + childSnapshot.key);
-					//	console.log('element is ='+$('#'+childSnapshot.key));
-					//$('#'+childData.order[i].menu_id).attr('data-childkey',childSnapshot.key);
+
+					// set key เพื่อให้รู้ว่าข้อมูลนี้มาจากดาต้าเบส
 					$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
 
 

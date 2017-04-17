@@ -1,0 +1,151 @@
+{
+  "Category" : [ null, {
+    "category_name" : "อาหาร",
+    "category_picture" : "menupics/food.jpg"
+  }, {
+    "category_name" : "เครื่องดื่ม",
+    "category_picture" : "menupics/drink.jpg"
+  } ],
+  "DinningTable" : {
+    "1A" : {
+      "table_status" : "โคตรเจ๋ง"
+    },
+    "2A" : {
+      "table_status" : "วะฮะฮ่ะฮ่าๆๆๆ"
+    },
+    "3A" : {
+      "table_status" : "ที่สุดของที่่สุ"
+    }
+  },
+  "Menu" : [ null, {
+    "category_id" : 1,
+    "menu_name" : "ข้าวหมูแดงแจ๋อ่ะ",
+    "menu_picture" : "menupics/red_pork_with_rice.jpg",
+    "menu_price" : 3500
+  }, {
+    "category_id" : 1,
+    "menu_name" : "ข้าวหน้าเป็ด",
+    "menu_picture" : "menupics/roast_duck_over_rice.jpg",
+    "menu_price" : 40
+  }, {
+    "category_id" : 1,
+    "menu_name" : "ข้าวกะเพราไก่เผ็ด",
+    "menu_picture" : "menupics/fried_chicken_with_basil.jpg",
+    "menu_price" : 5009
+  }, {
+    "category_id" : 2,
+    "menu_name" : "น้ำเปล่า",
+    "menu_picture" : "menupics/drinking_water.jpg",
+    "menu_price" : 5
+  }, {
+    "category_id" : 2,
+    "menu_name" : "น้ำเก๊กฮวย",
+    "menu_picture" : "menupics/chrysanthemum_tea.jpg",
+    "menu_price" : 10
+  }, {
+    "category_id" : 2,
+    "menu_name" : "คาปูชิโน่เย็น",
+    "menu_picture" : "menupics/capuchino.jpg",
+    "menu_price" : 45
+  } ],
+  "Temp_Orders" : {
+    "-KhoGYIEBb1I3Wp0FsFS" : {
+      "order" : [ {
+        "menu_id" : "1",
+        "quantity" : "6",
+        "status" : "pending"
+      }, {
+        "menu_id" : "2",
+        "quantity" : "3",
+        "status" : "pending"
+      }, {
+        "menu_id" : "3",
+        "quantity" : "1",
+        "status" : "pending"
+      } ],
+      "table_number" : "1A",
+      "time" : "2017-3-16 8:0:10"
+    },
+    "-KhpyVzEQF1mQYbjMfuG" : {
+      "order" : [ {
+        "menu_id" : "5",
+        "quantity" : "6969"
+      }, {
+        "menu_id" : "6",
+        "quantity" : "55555"
+      } ],
+      "table_number" : "1A",
+      "time" : "2017-3-16 15:56:14"
+    },
+    "-Khq0LAHP9aXtDKRl_cx" : {
+      "order" : [ {
+        "menu_id" : "4",
+        "quantity" : "333"
+      } ],
+      "table_number" : "1A",
+      "time" : "2017-3-16 16:8:36"
+    },
+    "-KhqIzojm-pqbJviKmjK" : {
+      "order" : [ {
+        "menu_id" : "1",
+        "quantity" : "71"
+      }, {
+        "menu_id" : "2",
+        "quantity" : "813"
+      }, {
+        "menu_id" : "3",
+        "quantity" : "3"
+      } ],
+      "table_number" : "2A",
+      "time" : "2017-3-16 17:30:5"
+    },
+    "-KhuqyRsAQEm2v0MhW5x" : {
+      "order" : [ {
+        "menu_id" : "4",
+        "quantity" : "5"
+      }, {
+        "menu_id" : "5",
+        "quantity" : "7"
+      }, {
+        "menu_id" : "6",
+        "quantity" : "8"
+      } ],
+      "table_number" : "2A",
+      "time" : "2017-3-17 14:41:23"
+    },
+    "-KhvcRkNCTbGIfgYKD2C" : {
+      "order" : [ {
+        "menu_id" : "1",
+        "quantity" : "3",
+        "status" : "pending"
+      }, {
+        "menu_id" : "2",
+        "quantity" : "4",
+        "status" : "pending"
+      }, {
+        "menu_id" : "3",
+        "quantity" : "5",
+        "status" : "pending"
+      } ],
+      "table_number" : "3A",
+      "time" : "2017-3-17 18:17:33"
+    },
+    "-KhvcUPCLtLDFgp7sE2d" : {
+      "order" : [ {
+        "menu_id" : "4",
+        "quantity" : "13",
+        "status" : "pending"
+      }, {
+        "menu_id" : "5",
+        "quantity" : "5",
+        "status" : "pending"
+      }, {
+        "menu_id" : "6",
+        "quantity" : "9",
+        "status" : "pending"
+      } ],
+      "table_number" : "3A",
+      "time" : "2017-3-17 18:17:43"
+    }
+  }
+}
