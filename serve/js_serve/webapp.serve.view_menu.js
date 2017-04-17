@@ -223,7 +223,7 @@
 
 		var have_data_from_firebase = false;
 
-		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
+		//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
 		var firebaseRefUpdateTemp_Orders;
 		var jsonUpdateOrder = {};
@@ -240,86 +240,40 @@
 		var oldorder;
 		var update_order = [];
 		var menuId;
-		var newQuan;
+		var quan;
 
 		//$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
-			$("#list_view_menu .ui-li-count").each(function(index){
+		$("#list_view_menu .ui-li-count").each(function(index){
 
+			menuId = $(this).attr("data-menu_id");
+			quan = $(this).text();
 
 			if($(this).attr("data-childkey")){
-			// exits in Temp_Orders
-			have_data_from_firebase  = true;
-			console.log('found old order.......');
-			childkey = $(this).attr("data-childkey");
-			menuId = $(this).attr("data-menu_id");
-			newQuan = $(this).text();
-			firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
-			//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
 
-// ***
+				// exits in Temp_Orders
+				have_data_from_firebase  = true;
+				console.log('found old order.......');
+				childkey = $(this).attr("data-childkey");
+				//menuId = $(this).attr("data-menu_id");
+				//newQuan = $(this).text();
+				firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
 
-				/*
-						firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
-							oldorder = snapshot.val();
-							$.each(oldorder,function(index,value){
+			}  //end if if($(this).attr("data-childkey"))
 
-								  if(oldorder[index].menu_id == menuId && oldorder[index].quantity != newQuan){
-
-									  update_order.push({
-											menu_id: menuId,
-											quantity: newQuan,
-											edit_time: current_time
-										});
-								  } else{
-									//	update_order.push(oldorder[index]);
-									update_order.push({
-										menu_id: oldorder[index].menu_id,
-										quantity: oldorder[index].quantity,
-										edit_time: current_time
-
-									});
-									} // if(oldorer==);
-
-							}); // $.each() oldorer
-
-
-
-						});  // firebaseRefUpdateTemp_Orders.once
-						*/
-
-				} else{
-					/*
-						// new order
-						if($(this).text()!='0'){
-									//jsonOrder.order.push({
-									update_order.push({
-										menu_id: $(this).attr("data-menu_id"),
-										quantity: $(this).text()
-									});
-
-									jsonOrder.order.push({
-										menu_id: $(this).attr("data-menu_id"),
-										quantity: $(this).text()
-									});
-						}
-						*/
-
-				}  //end if if($(this).attr("data-childkey"))
 				if($(this).text()!='0'){
 							//jsonOrder.order.push({
 							update_order.push({
-								menu_id: $(this).attr("data-menu_id"),
-								quantity: $(this).text()
+								menu_id: menuId,
+								quantity: quan
 							});
 
 							jsonOrder.order.push({
-								menu_id: $(this).attr("data-menu_id"),
-								quantity: $(this).text()
+								menu_id: menuId,
+								quantity: quan
 							});
 				}
-		});  // list view menu each ******
 
-		//console.log(JSON.stringify(oldorder));
+		});  // list view menu each ******
 
 		// save new order
 
@@ -334,9 +288,10 @@
 		else if(have_data_from_firebase === false && jsonOrder.order.length > 0){
 			console.log('if all is new order');
 			//firebaseRefTemp_Orders.push(jsonOrder);
-			firebaseRefUpdateTemp_Orders.push(jsonOrder);
+			firebase.database().ref("Temp_Orders").push(jsonOrder);
+			//firebaseRefUpdateTemp_Orders.push(jsonOrder);
 			console.log(JSON.stringify(jsonOrder));
-			console.log('add new order success (no new order)');
+			console.log('add new order success (no OLD order)');
 
 		}
 
