@@ -217,6 +217,12 @@
 
 	function sendOrder(){
 
+		if(change_quantity === false){
+			return false;
+		}
+
+		var have_data_from_firebase = false;
+
 		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
 		var firebaseRefUpdateTemp_Orders;
@@ -236,93 +242,94 @@
 		var menuId;
 		var newQuan;
 
-		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
+		//$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
+			$("#list_view_menu .ui-li-count").each(function(index){
+
 
 			if($(this).attr("data-childkey")){
 			// exits in Temp_Orders
+			have_data_from_firebase  = true;
 			console.log('found old order.......');
 			childkey = $(this).attr("data-childkey");
 			menuId = $(this).attr("data-menu_id");
 			newQuan = $(this).text();
 			firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
+			//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
 
 // ***
 
 						firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
 							oldorder = snapshot.val();
 							$.each(oldorder,function(index,value){
-									console.log('menu id = '+menuId);
-									console.log('DB old menu id = '+ oldorder[index].menu_id);
-									console.log('newquan ='+newQuan);
-									console.log('DB old quan = '+oldorder[index].quantity);
 
 								  if(oldorder[index].menu_id == menuId && oldorder[index].quantity != newQuan){
-									  console.log('old menu id == menuId ja and quan chang ja');
-									 // console.log('result = '+JSON.stringify(oldorder));
+
 									  update_order.push({
 											menu_id: menuId,
 											quantity: newQuan,
 											edit_time: current_time
 										});
-								  }
+								  } else{
+										update_order.push(oldorder[index]);
+									} // if(oldorer==);
 
-							});
-
+							}); // $.each()
 
 
 						});
 
-
-						//***
-
-						/*
-									jsonUpdateOrder.order.push({
-													menu_id: $(this).attr("data-menu_id"),
-													quantity: $(this).text(),
-													edit_time: current_time
-												 });
-												 */
-
-								//	firebaseRefUpdateTemp_Orders.update(jsonUpdateOrder.order);
-
-								//firebaseRefUpdateTemp_Orders.set(jsonUpdateOrder.order);
-
-
-						/*
-									firebaseRefUpdateTemp_Orders.update({
+				} else{
+						// new order
+						if($(this).text()!='0'){
+									//jsonOrder.order.push({
+									update_order.push({
 										menu_id: $(this).attr("data-menu_id"),
-										quantity: $(this).text(),
-										edit_time: current_time
+										quantity: $(this).text()
 									});
-						*/
 
+									jsonOrder.order.push({
+										menu_id: $(this).attr("data-menu_id"),
+										quantity: $(this).text()
+									});
+						}
 
-									} else{
-									// new order
-											jsonOrder.order.push({
-															menu_id: $(this).attr("data-menu_id"),
-															quantity: $(this).text()
-														 });
-									}
+				}  //end if if($(this).attr("data-childkey"))
 
 		});  // list view menu each ******
 
 		//console.log(JSON.stringify(oldorder));
 
 		// save new order
-		if(jsonOrder.order.length > 0){
 
-			firebaseRefTemp_Orders.push(jsonOrder);
+		if(have_data_from_firebase === true){
+			console.log('if have data from firebase and no new order')
+			firebaseRefUpdateTemp_Orders.set(update_order);
+			console.log(JSON.stringify(update_order));
+			//console.log('update old order but no new order success');
+			console.log('update old order but no new order success');
+		}
+/*
+		else if(have_data_from_firebase === true && jsonOrder.order.length > 0){
+			console.log('if have data from firebase and HAVE new order');
+
+			firebaseRefUpdateTemp_Orders.set(update_order);
+			//firebaseRefUpdateTemp_Orders.push(jsonOrder.order);
+			console.log(JSON.stringify(update_order));
+			console.log('update old order and have new order success');
+		}
+*/
+		else if(have_data_from_firebase === false && jsonOrder.order.length > 0){
+			console.log('if all is new order');
+			//firebaseRefTemp_Orders.push(jsonOrder);
+			firebaseRefUpdateTemp_Orders.push(jsonOrder);
 			console.log(JSON.stringify(jsonOrder));
-			console.log('add new order success');
+			console.log('add new order success (no new order)');
 
 		}
 
 		// update old order
 		if(update_order.length > 0){
-			firebaseRefUpdateTemp_Orders.set(update_order);
-			console.log(JSON.stringify(update_order));
-			console.log('update order success');
+
 		}
 
 /*
