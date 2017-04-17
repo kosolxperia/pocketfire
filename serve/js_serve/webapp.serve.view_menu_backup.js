@@ -1,23 +1,23 @@
 (function($){
 
 	var change_quantity = false;
-
+	var firebaseRefMenu;
+	var firebaseRefTemp_Orders;
 
 	$(document).on("pageinit", "#page-view_menu", function(){
 		var active_category = parseInt(sessionStorage.activeCategory);
 		console.log('active category = '+ active_category);
 
 		// .equalTo use integer data !!!!
-		var firebaseRef = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
+		firebaseRefMenu = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
 		var tableNum;
 		checkActiveTable();
-		//checkActiveCategory();
 
 		loadFirebaseData();
 		onFirebaseChange();
 		showCategoryName();
 		setEventBtnSummaryMenu();
-		checkPendingOrder();
+		//checkPendingOrder();
 
 		function showCategoryName(){
 
@@ -43,20 +43,52 @@
 		}
 
 		function loadFirebaseData(){
-			console.log('run loadFirebaseData()...');
-			firebaseRef.once('value', function(snapshot) {
+			//console.log('run loadFirebaseData()...');
+			firebaseRefMenu.once('value', function(snapshot) {
 				UIUpdateListViewMenu(snapshot);
 			});  //firebase once
 
+			firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+			//firebaseRefTemp_Orders.orderByChild("time");
 		}
 
 		function onFirebaseChange(){
 
-			firebaseRef.on('child_changed', function(data) {
+			firebaseRefMenu.on('child_changed', function(data) {
 				console.log('child change '+ data.key + ' and ' + data.val().category_name);
 					//$('#'+data.key).text(data.val().category_name);
 					UIUpdateMenuName(data.key, data.val());
 			});
+
+
+			//Temp_Orders
+			firebaseRefTemp_Orders.on('child_changed', function(data) {
+			var childData = data.val();
+			console.log('child CHANGE childData = '+JSON.stringify(childData));
+
+			var arrayLength = childData.order.length;
+			for (var i = 0; i < arrayLength; i++) {
+
+				console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+				UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+
+			}
+
+			});
+
+			firebaseRefTemp_Orders.on('child_added', function(data) {
+			var childData = data.val();
+			//console.log('child ADD childData = '+JSON.stringify(childData));
+			console.log('child ADD');
+			var arrayLength = childData.order.length;
+			for (var i = 0; i < arrayLength; i++) {
+
+				//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+				UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+
+			}
+			});
+
 
 		}
 
@@ -79,16 +111,22 @@
 				menuHtml += '<li data-icon="false"><a class="link_menu">';
 				menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
 				menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
+				//menuHtml += '<h1>'+ childData.menu_name +'</h1>';
 				menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
-				menuHtml += '<span class="ui-li-count" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
+				//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
+				menuHtml += '<span class="ui-li-count" id="'+ childKey +'quan" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
 				menuHtml += '</a></li>';
-
+	//alert($('#'+childKey).html());
 			}); //for each
 			//console.log(menuHtml);
 			$('#list_view_menu').append(menuHtml);
 			$('#list_view_menu').listview('refresh');
 
 			setEventListMenu();
+
+			//add delay for loadcomplete then check pending order
+			checkPendingOrder();
+
 		}
 
 	function setEventListMenu(){
@@ -144,26 +182,53 @@
 
 	function checkPendingOrder(){
 		console.log('check pending order....');
-		var firebaseRef4 = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-		firebaseRef4.once('value', function(snapshot) {
-			console.log(JSON.stringify(snapshot));
+		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+		firebaseRefTemp_Orders.once('value', function(snapshot) {
+
 			snapshot.forEach(function(childSnapshot) {
-				var childKey = childSnapshot.key;
+
+				console.log('found pending order');
+				//console.log(JSON.stringify(childSnapshot));
+
 				var childData = childSnapshot.val();
+				//console.log('childData = '+JSON.stringify(childData));
+
+				var arrayLength = childData.order.length;
+				for (var i = 0; i < arrayLength; i++) {
+
+					console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+					console.log('key is ' + childSnapshot.key);
+					//	console.log('element is ='+$('#'+childSnapshot.key));
+					//$('#'+childData.order[i].menu_id).attr('data-childkey',childSnapshot.key);
+					$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
+
+
+				}
 
 			}); //for each
 		});  //firebase once
 	}
 
-	function UIUpdateQuantity(data){
-		$('#'+data.)
-
+	function UIUpdateQuantity(menu_id, quantity){
+		console.log('fn UIUpdateQuantity....');
+		var a= $('#'+menu_id+'quan').text(quantity);
 	}
 
 	function sendOrder(){
 
-		var firebaseRef3 = firebase.database().ref("Temp_Orders")
+		if(change_quantity === false){
+			return false;
+		}
+
+		var have_data_from_firebase = false;
+
+		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
+		var firebaseRefUpdateTemp_Orders;
+		var jsonUpdateOrder = {};
+		jsonUpdateOrder.order= [];
+		var childkey; // for old order
 		var jsonOrder = {};
 
 		var d = new Date();
@@ -172,19 +237,120 @@
 		jsonOrder.time = current_time;
 		jsonOrder.order = [];
 
-		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
-			jsonOrder.order.push({
-									menu_id: $(this).attr("data-menu_id"),
-									quantity: $(this).text()
-								 });
+		var oldorder;
+		var update_order = [];
+		var menuId;
+		var newQuan;
 
-		});
-		//แปลงข้อมูลชนิดออบเจ็กตให้เป็นข้อมูล JSON
-		//jsonOrder = JSON.stringify(jsonOrder);
-		//console.log(jsonOrder);
+		//$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
+			$("#list_view_menu .ui-li-count").each(function(index){
 
-		firebaseRef3.push(jsonOrder);
-		console.log('send order success');
+
+			if($(this).attr("data-childkey")){
+			// exits in Temp_Orders
+			have_data_from_firebase  = true;
+			console.log('found old order.......');
+			childkey = $(this).attr("data-childkey");
+			menuId = $(this).attr("data-menu_id");
+			newQuan = $(this).text();
+			firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
+			//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
+
+// ***
+
+						firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
+							oldorder = snapshot.val();
+							$.each(oldorder,function(index,value){
+
+								  if(oldorder[index].menu_id == menuId && oldorder[index].quantity != newQuan){
+
+									  update_order.push({
+											menu_id: menuId,
+											quantity: newQuan,
+											edit_time: current_time
+										});
+								  } else{
+									//	update_order.push(oldorder[index]);
+									update_order.push({
+										menu_id: oldorder[index].menu_id,
+										quantity: oldorder[index].quantity,
+										edit_time: current_time
+
+									});
+									} // if(oldorer==);
+
+							}); // $.each()
+
+
+						});
+
+				} else{
+						// new order
+						if($(this).text()!='0'){
+									//jsonOrder.order.push({
+									update_order.push({
+										menu_id: $(this).attr("data-menu_id"),
+										quantity: $(this).text()
+									});
+
+									jsonOrder.order.push({
+										menu_id: $(this).attr("data-menu_id"),
+										quantity: $(this).text()
+									});
+						}
+
+				}  //end if if($(this).attr("data-childkey"))
+
+		});  // list view menu each ******
+
+		//console.log(JSON.stringify(oldorder));
+
+		// save new order
+
+		if(have_data_from_firebase === true){
+			console.log('if have data from firebase and no new order')
+			firebaseRefUpdateTemp_Orders.set(update_order);
+			console.log(JSON.stringify(update_order));
+			//console.log('update old order but no new order success');
+			console.log('update old order but no new order success');
+		}
+/*
+		else if(have_data_from_firebase === true && jsonOrder.order.length > 0){
+			console.log('if have data from firebase and HAVE new order');
+
+			firebaseRefUpdateTemp_Orders.set(update_order);
+			//firebaseRefUpdateTemp_Orders.push(jsonOrder.order);
+			console.log(JSON.stringify(update_order));
+			console.log('update old order and have new order success');
+		}
+*/
+		else if(have_data_from_firebase === false && jsonOrder.order.length > 0){
+			console.log('if all is new order');
+			//firebaseRefTemp_Orders.push(jsonOrder);
+			firebaseRefUpdateTemp_Orders.push(jsonOrder);
+			console.log(JSON.stringify(jsonOrder));
+			console.log('add new order success (no new order)');
+
+		}
+
+		// update old order
+		if(update_order.length > 0){
+
+		}
+
+/*
+		if(jsonUpdateOrder.order[0]){
+		// have item for update
+		firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey);
+
+		var arrayLength = jsonUpdateOrder.order.length;
+		for (var i = 0; i < arrayLength; i++) {
+			firebaseRefUpdateTemp_Orders.update(jsonUpdateOrder.order[i]);
+		}
+
+
+		}
+*/
 
 		//$.mobile.changePage( "view_summary.html");
 
