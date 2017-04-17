@@ -280,7 +280,10 @@
 		if(have_data_from_firebase === true){
 			// มีอย่างน้อยหนึ่งแถวในลิสต์ที่มาจากดาต้าเบส
 			console.log('if have data from firebase and no new order');
+
 			firebaseRefUpdateTemp_Orders.set(update_order);
+		//	firebase.database().ref("Temp_Orders/"+childkey).push({'edit_time': current_time});
+
 			console.log(JSON.stringify(update_order));
 			//console.log('update old order but no new order success');
 			console.log('update old order but no new order success');
