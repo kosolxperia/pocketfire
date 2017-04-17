@@ -298,29 +298,19 @@
 
 	}
 
-/*
 	$(document).on("pagebeforehide", "#page-view_menu", function(){
 
 		if(change_quantity === false){
 			return false;
 		}
 
-		var json_order = createJSON_Order();
+		sendOrder();
 
-		$.ajax({
-			type: "POST",
-			url: "send_order.php",
-			data: { "order": json_order },
-			success: function(data){
 
-				change_quantity = false;
+	}); //before page hide
 
-			},
-			error: function() {
-				alert("เกิดข้อผิดพลาด");
-			}
-		});
-*/
+
+
 	});
 
 
