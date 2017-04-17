@@ -226,8 +226,6 @@
 		//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
 		var firebaseRefUpdateTemp_Orders;
-		var jsonUpdateOrder = {};
-		jsonUpdateOrder.order= [];
 		var childkey; // for old order
 		var jsonOrder = {};
 
@@ -237,7 +235,6 @@
 		jsonOrder.time = current_time;
 		jsonOrder.order = [];
 
-		var oldorder;
 		var update_order = [];
 		var menuId;
 		var quan;
@@ -294,6 +291,8 @@
 			console.log('add new order success (no OLD order)');
 
 		}
+
+		change_quantity = false;
 
 		//$.mobile.changePage( "view_summary.html");
 
