@@ -212,7 +212,7 @@
 
 	function UIUpdateQuantity(menu_id, quantity){
 		console.log('fn UIUpdateQuantity....');
-		var a= $('#'+menu_id+'quan').text(quantity);
+		//var a= $('#'+menu_id+'quan').text(quantity);
 	}
 
 	function sendOrder(){
@@ -223,11 +223,9 @@
 
 		var have_data_from_firebase = false;
 
-		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
+		//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
 		var firebaseRefUpdateTemp_Orders;
-		var jsonUpdateOrder = {};
-		jsonUpdateOrder.order= [];
 		var childkey; // for old order
 		var jsonOrder = {};
 
@@ -237,150 +235,85 @@
 		jsonOrder.time = current_time;
 		jsonOrder.order = [];
 
-		var oldorder;
 		var update_order = [];
 		var menuId;
-		var newQuan;
+		var quan;
 
 		//$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
-			$("#list_view_menu .ui-li-count").each(function(index){
+		$("#list_view_menu .ui-li-count").each(function(index){
 
+			menuId = $(this).attr("data-menu_id");
+			quan = $(this).text();
 
 			if($(this).attr("data-childkey")){
-			// exits in Temp_Orders
-			have_data_from_firebase  = true;
-			console.log('found old order.......');
-			childkey = $(this).attr("data-childkey");
-			menuId = $(this).attr("data-menu_id");
-			newQuan = $(this).text();
-			firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
-			//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
 
-// ***
+				// exits in Temp_Orders
+				have_data_from_firebase  = true;
+				console.log('found old order.......');
+				childkey = $(this).attr("data-childkey");
+				//menuId = $(this).attr("data-menu_id");
+				//newQuan = $(this).text();
+				firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
 
-						firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
-							oldorder = snapshot.val();
-							$.each(oldorder,function(index,value){
-
-								  if(oldorder[index].menu_id == menuId && oldorder[index].quantity != newQuan){
-
-									  update_order.push({
-											menu_id: menuId,
-											quantity: newQuan,
-											edit_time: current_time
-										});
-								  } else{
-									//	update_order.push(oldorder[index]);
-									update_order.push({
-										menu_id: oldorder[index].menu_id,
-										quantity: oldorder[index].quantity,
-										edit_time: current_time
-
-									});
-									} // if(oldorer==);
-
-							}); // $.each()
+			}  //end if if($(this).attr("data-childkey"))
 
 
-						});
+				if(quan!='0'){
 
-				} else{
-						// new order
-						if($(this).text()!='0'){
-									//jsonOrder.order.push({
-									update_order.push({
-										menu_id: $(this).attr("data-menu_id"),
-										quantity: $(this).text()
-									});
+					update_order.push({
+							menu_id: menuId,
+							quantity: quan,
+							status: 'pending'
+					});
 
-									jsonOrder.order.push({
-										menu_id: $(this).attr("data-menu_id"),
-										quantity: $(this).text()
-									});
-						}
-
-				}  //end if if($(this).attr("data-childkey"))
+					// เพิ่มตรงนี้เสมอ เพราะอาจจะเจอว่าเป็น order จาก ดาต้าเบสในลิสต์แถวล่างๆ ก็ได้
+					jsonOrder.order.push({
+							menu_id: menuId,
+							quantity: quan,
+							status: 'pending'
+					});
+				}
 
 		});  // list view menu each ******
 
-		//console.log(JSON.stringify(oldorder));
-
 		// save new order
-
 		if(have_data_from_firebase === true){
-			console.log('if have data from firebase and no new order')
+			// มีอย่างน้อยหนึ่งแถวในลิสต์ที่มาจากดาต้าเบส
+			console.log('if have data from firebase and no new order');
 			firebaseRefUpdateTemp_Orders.set(update_order);
 			console.log(JSON.stringify(update_order));
 			//console.log('update old order but no new order success');
 			console.log('update old order but no new order success');
 		}
-/*
-		else if(have_data_from_firebase === true && jsonOrder.order.length > 0){
-			console.log('if have data from firebase and HAVE new order');
-
-			firebaseRefUpdateTemp_Orders.set(update_order);
-			//firebaseRefUpdateTemp_Orders.push(jsonOrder.order);
-			console.log(JSON.stringify(update_order));
-			console.log('update old order and have new order success');
-		}
-*/
 		else if(have_data_from_firebase === false && jsonOrder.order.length > 0){
+			// ไม่มีแถวใดในลิสต์ที่เป็นลิสต์จากดาต้าเบสเลย
 			console.log('if all is new order');
 			//firebaseRefTemp_Orders.push(jsonOrder);
-			firebaseRefUpdateTemp_Orders.push(jsonOrder);
+			firebase.database().ref("Temp_Orders").push(jsonOrder);
+			//firebaseRefUpdateTemp_Orders.push(jsonOrder);
 			console.log(JSON.stringify(jsonOrder));
-			console.log('add new order success (no new order)');
+			console.log('add new order success (no OLD order)');
 
 		}
 
-		// update old order
-		if(update_order.length > 0){
-
-		}
-
-/*
-		if(jsonUpdateOrder.order[0]){
-		// have item for update
-		firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey);
-
-		var arrayLength = jsonUpdateOrder.order.length;
-		for (var i = 0; i < arrayLength; i++) {
-			firebaseRefUpdateTemp_Orders.update(jsonUpdateOrder.order[i]);
-		}
-
-
-		}
-*/
+		change_quantity = false;
 
 		//$.mobile.changePage( "view_summary.html");
 
 	}
 
-/*
 	$(document).on("pagebeforehide", "#page-view_menu", function(){
 
 		if(change_quantity === false){
 			return false;
 		}
 
-		var json_order = createJSON_Order();
+		sendOrder();
 
-		$.ajax({
-			type: "POST",
-			url: "send_order.php",
-			data: { "order": json_order },
-			success: function(data){
-
-				change_quantity = false;
-
-			},
-			error: function() {
-				alert("เกิดข้อผิดพลาด");
-			}
-		});
-*/
-	});
+	}); //before page hide
 
 
+
+});
 
 })(jQuery);
