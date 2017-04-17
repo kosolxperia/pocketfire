@@ -238,6 +238,8 @@
 		var menuId;
 		var quan;
 
+		var orderFromDB;
+
 		//$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
 		$("#list_view_menu .ui-li-count").each(function(index){
 
@@ -254,38 +256,61 @@
 				//newQuan = $(this).text();
 				firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
 
+				if(!orderFromDB){
+					// load data from DB once
+					firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
+							orderFromDB = snapshot.val();
+					});
+
+				}
+				/*
+				firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
+											orderFromDB = snapshot.val();
+				}
+				*/
+
+
 			}  //end if if($(this).attr("data-childkey"))
 
 			//quan_element.attr("data-update_item","yes");
 				if(quan!='0'){
 
-					if($(this).attr("data-update_item")){
-						// ข้อมูลต่างจากในดาต้าเบส
-						console.log('ข้อมูลต่างจากในดาต้าเบส');
-						update_order.push({
-								menu_id: menuId,
-								quantity: quan,
-								status: 'pending',
-								edit_time: current_time
-						});
-					}
-					else{
-						// ข้อมูลไม่ต่างจากในดาต้าเบส
-						update_order.push({
-								menu_id: menuId,
-								quantity: quan,
-								status: 'pending'
-						});
-					}
+							if($(this).attr("data-update_item")){
+								// ข้อมูลต่างจากในดาต้าเบส
+								console.log('ข้อมูลต่างจากในดาต้าเบส');
+								update_order.push({
+										menu_id: menuId,
+										quantity: quan,
+										status: 'pending',
+										edit_time: current_time
+								});
 
+							}
+
+							else if($(this).attr("data-childkey") && !$(this).attr("data-update_item")){
+										// ข้อมูลไม่ต่างจากในดาต้าเบส
+										update_order.push(orderFromDB[index]);
+
+							} // if($(this).attr("data-childkey") && !$(this).attr("data-update_item")){
+
+							else {
+									// ใส่ข้อมูลไว้ก่อน เผื่อแถวล่างๆ จะมีข้อมุลจากดาต้าเบส
+										update_order.push({
+												menu_id: menuId,
+												quantity: quan,
+												status: 'pending'
+										});
+							} // if($(this).attr("data-update_item")){
 
 					// เพิ่มตรงนี้เสมอ เพราะอาจจะเจอว่าเป็น order จาก ดาต้าเบสในลิสต์แถวล่างๆ ก็ได้
+					// เผื่อเป็นออร์เดอร์ใหม่ทั้งหมดทุกแถว
 					jsonOrder.order.push({
 							menu_id: menuId,
 							quantity: quan,
 							status: 'pending'
 					});
-				}
+
+				} // if(quan!=0)
 
 		});  // list view menu each ******
 
@@ -296,7 +321,7 @@
 
 			firebaseRefUpdateTemp_Orders.set(update_order);
 			//firebase.database().ref("Temp_Orders/"+childkey+"/edit_time").set({'edit_time': current_time});
-			firebase.database().ref("Temp_Orders/"+childkey+"/edit_time").set(current_time);
+			firebase.database().ref("Temp_Orders/"+childkey+"/last_edit_time").set(current_time);
 			console.log(JSON.stringify(update_order));
 			//console.log('update old order but no new order success');
 			console.log('update old order but no new order success');
