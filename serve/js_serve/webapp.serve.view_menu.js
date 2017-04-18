@@ -67,6 +67,15 @@
 				var childData = data.val();
 				console.log('child CHANGE childData = '+JSON.stringify(childData));
 
+				var keys = Object.keys(childData.order);
+				for (var i = 0; i < keys.length; i++) {
+						var keyname = keys[i];
+					//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
+				}
+		
+
+/*
 				var arrayLength = childData.order.length;
 				for (var i = 0; i < arrayLength; i++) {
 
@@ -74,10 +83,11 @@
 					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 
 				}
-
+*/
 			});
 
 			firebaseRefTemp_Orders.on('child_added', function(data) {
+				/*
 				var childData = data.val();
 				//console.log('child ADD childData = '+JSON.stringify(childData));
 				console.log('child ADD');
@@ -88,6 +98,7 @@
 					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 
 				}
+				*/
 			});
 
 			firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
@@ -288,7 +299,12 @@
 					});
 
 				} else {
-					firebaseRefUpdateTemp_Orders.remove();
+					firebaseRefUpdateTemp_Orders.set({
+							quantity: quan,
+							status: 'cancel',
+							edit_time: current_time
+					});
+					//firebaseRefUpdateTemp_Orders.remove();
 				}
 			//firebase.database().ref("Temp_Orders/"+childkey+"/order/M3").remove();
 
