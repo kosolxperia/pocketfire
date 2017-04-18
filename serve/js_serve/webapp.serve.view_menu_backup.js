@@ -57,7 +57,7 @@
 			firebaseRefMenu.on('child_changed', function(data) {
 				console.log('child change '+ data.key + ' and ' + data.val().category_name);
 					//$('#'+data.key).text(data.val().category_name);
-					UIUpdateMenuName(data.key, data.val());
+					UIUpdateMenu(data.key, data.val());
 			});
 
 
@@ -92,9 +92,11 @@
 
 		}
 
-		function UIUpdateMenuName(key, data){
+		function UIUpdateMenu(key, data){
 				$('#' + key).text(data.menu_name);
 				$('#' + key +'price').text(data.menu_price);
+				$('#' + key +'img').attr('src','../' + data.menu_picture);
+
 		}
 
 		function UIUpdateListViewMenu(snapshot){
@@ -106,19 +108,17 @@
 			snapshot.forEach(function(childSnapshot) {
 				var childKey = childSnapshot.key;
 				var childData = childSnapshot.val();
-				//console.log(childData.menu_picture);
 
 				menuHtml += '<li data-icon="false"><a class="link_menu">';
-				menuHtml += '<img src="../'+ childData.menu_picture +'"/>';
+				menuHtml += '<img id="' + childKey +'img" src="../'+ childData.menu_picture +'"/>';
 				menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
-				//menuHtml += '<h1>'+ childData.menu_name +'</h1>';
 				menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
 				//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
 				menuHtml += '<span class="ui-li-count" id="'+ childKey +'quan" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
 				menuHtml += '</a></li>';
-	//alert($('#'+childKey).html());
+
 			}); //for each
-			//console.log(menuHtml);
+
 			$('#list_view_menu').append(menuHtml);
 			$('#list_view_menu').listview('refresh');
 
@@ -138,6 +138,7 @@
 
 			quan_element.text(++quantity);
 			quan_element.attr("data-update_item","yes");
+
 			//มีการเปลี่ยนแปลงออร์เดอร์ในรายการเมนู
 			change_quantity = true;
 
@@ -188,19 +189,17 @@
 			snapshot.forEach(function(childSnapshot) {
 
 				console.log('found pending order');
-				//console.log(JSON.stringify(childSnapshot));
 
 				var childData = childSnapshot.val();
-				//console.log('childData = '+JSON.stringify(childData));
 
 				var arrayLength = childData.order.length;
 				for (var i = 0; i < arrayLength; i++) {
 
-					console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+					//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
 					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 					console.log('key is ' + childSnapshot.key);
-					//	console.log('element is ='+$('#'+childSnapshot.key));
-					//$('#'+childData.order[i].menu_id).attr('data-childkey',childSnapshot.key);
+
+					// set key เพื่อให้รู้ว่าข้อมูลนี้มาจากดาต้าเบส
 					$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
 
 
@@ -212,7 +211,7 @@
 
 	function UIUpdateQuantity(menu_id, quantity){
 		console.log('fn UIUpdateQuantity....');
-		//var a= $('#'+menu_id+'quan').text(quantity);
+		$('#'+menu_id+'quan').text(quantity);
 	}
 
 	function sendOrder(){
@@ -239,6 +238,8 @@
 		var menuId;
 		var quan;
 
+		var orderFromDB;
+
 		//$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
 		$("#list_view_menu .ui-li-count").each(function(index){
 
@@ -255,24 +256,61 @@
 				//newQuan = $(this).text();
 				firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
 
-			}  //end if if($(this).attr("data-childkey"))
-
-
-				if(quan!='0'){
-
-					update_order.push({
-							menu_id: menuId,
-							quantity: quan,
-							status: 'pending'
+				if(!orderFromDB){
+					// load data from DB once
+					firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
+							orderFromDB = snapshot.val();
 					});
 
+				}
+				/*
+				firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
+											orderFromDB = snapshot.val();
+				}
+				*/
+
+
+			}  //end if if($(this).attr("data-childkey"))
+
+			//quan_element.attr("data-update_item","yes");
+				if(quan!='0'){
+
+							if($(this).attr("data-update_item")){
+								// ข้อมูลต่างจากในดาต้าเบส
+								console.log('ข้อมูลต่างจากในดาต้าเบส');
+								update_order.push({
+										menu_id: menuId,
+										quantity: quan,
+										status: 'pending',
+										edit_time: current_time
+								});
+
+							}
+
+							else if($(this).attr("data-childkey") && !$(this).attr("data-update_item")){
+										// ข้อมูลไม่ต่างจากในดาต้าเบส
+										update_order.push(orderFromDB[index]);
+
+							} // if($(this).attr("data-childkey") && !$(this).attr("data-update_item")){
+
+							else {
+									// ใส่ข้อมูลไว้ก่อน เผื่อแถวล่างๆ จะมีข้อมุลจากดาต้าเบส
+										update_order.push({
+												menu_id: menuId,
+												quantity: quan,
+												status: 'pending'
+										});
+							} // if($(this).attr("data-update_item")){
+
 					// เพิ่มตรงนี้เสมอ เพราะอาจจะเจอว่าเป็น order จาก ดาต้าเบสในลิสต์แถวล่างๆ ก็ได้
+					// เผื่อเป็นออร์เดอร์ใหม่ทั้งหมดทุกแถว
 					jsonOrder.order.push({
 							menu_id: menuId,
 							quantity: quan,
 							status: 'pending'
 					});
-				}
+
+				} // if(quan!=0)
 
 		});  // list view menu each ******
 
@@ -280,7 +318,10 @@
 		if(have_data_from_firebase === true){
 			// มีอย่างน้อยหนึ่งแถวในลิสต์ที่มาจากดาต้าเบส
 			console.log('if have data from firebase and no new order');
+
 			firebaseRefUpdateTemp_Orders.set(update_order);
+			//firebase.database().ref("Temp_Orders/"+childkey+"/edit_time").set({'edit_time': current_time});
+			firebase.database().ref("Temp_Orders/"+childkey+"/last_edit_time").set(current_time);
 			console.log(JSON.stringify(update_order));
 			//console.log('update old order but no new order success');
 			console.log('update old order but no new order success');
@@ -297,6 +338,7 @@
 		}
 
 		change_quantity = false;
+		$("#list_view_menu .ui-li-count").removeAttr("data-update_item");
 
 		//$.mobile.changePage( "view_summary.html");
 

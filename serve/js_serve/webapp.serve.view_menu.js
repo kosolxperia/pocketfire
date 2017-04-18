@@ -182,28 +182,42 @@
 	}
 
 	function checkPendingOrder(){
+		//return false;
 		console.log('check pending order....');
 		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
 		firebaseRefTemp_Orders.once('value', function(snapshot) {
+			console.log('snapshot = ' +JSON.stringify(snapshot));
 
 			snapshot.forEach(function(childSnapshot) {
 
 				console.log('found pending order');
 
 				var childData = childSnapshot.val();
+				//var childData = childSnapshot;
+				console.log('test = ' +JSON.stringify(childData));
+				//console.log('child val = ' +JSON.stringify(childData);
+				//console.log('order key = ' +JSON.stringify(childData.order['M1'].quantity));
+				console.log('AAAAA order menuid ='+childData.table_number);
 
-				var arrayLength = childData.order.length;
-				for (var i = 0; i < arrayLength; i++) {
-
+				var keys = Object.keys(childData.order);
+				console.log('obj contains ' + keys.length + ' keys: '+  keys);
+				//var arrayLength = childData.order.length;
+				for (var i = 0; i < keys.length; i++) {
+						//alert(keys[i]);
+						var keyname = keys[i];
+					//	alert(childData.order[keyname]);
+						//alert(childData.order[keyname].quantity);
 					//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
-					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+				//	UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
+					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
 					console.log('key is ' + childSnapshot.key);
 
 					// set key เพื่อให้รู้ว่าข้อมูลนี้มาจากดาต้าเบส
-					$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
+					//$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
+					$('#'+keyname+"quan").attr('data-childkey',childSnapshot.key);
 
 
-				}
+				} // for loop
 
 			}); //for each
 		});  //firebase once
@@ -246,77 +260,30 @@
 			menuId = $(this).attr("data-menu_id");
 			quan = $(this).text();
 
-			if($(this).attr("data-childkey")){
-
-				// exits in Temp_Orders
-				have_data_from_firebase  = true;
-				console.log('found old order.......');
-				childkey = $(this).attr("data-childkey");
-				//menuId = $(this).attr("data-menu_id");
-				//newQuan = $(this).text();
-				firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order");
-
-				if(!orderFromDB){
-					// load data from DB once
-					firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
-							orderFromDB = snapshot.val();
-					});
-
-				}
-				/*
-				firebaseRefUpdateTemp_Orders.once('value', function(snapshot) {
-											orderFromDB = snapshot.val();
-				}
-				*/
-
-
-			}  //end if if($(this).attr("data-childkey"))
 
 			//quan_element.attr("data-update_item","yes");
 				if(quan!='0'){
-
-							if($(this).attr("data-update_item")){
-								// ข้อมูลต่างจากในดาต้าเบส
-								console.log('ข้อมูลต่างจากในดาต้าเบส');
-								update_order.push({
-										menu_id: menuId,
-										quantity: quan,
-										status: 'pending',
-										edit_time: current_time
-								});
-
-							}
-
-							else if($(this).attr("data-childkey") && !$(this).attr("data-update_item")){
-										// ข้อมูลไม่ต่างจากในดาต้าเบส
-										update_order.push(orderFromDB[index]);
-
-							} // if($(this).attr("data-childkey") && !$(this).attr("data-update_item")){
-
-							else {
-									// ใส่ข้อมูลไว้ก่อน เผื่อแถวล่างๆ จะมีข้อมุลจากดาต้าเบส
-										update_order.push({
-												menu_id: menuId,
-												quantity: quan,
-												status: 'pending'
-										});
-							} // if($(this).attr("data-update_item")){
-
+				//	alert(menuId);
 					// เพิ่มตรงนี้เสมอ เพราะอาจจะเจอว่าเป็น order จาก ดาต้าเบสในลิสต์แถวล่างๆ ก็ได้
 					// เผื่อเป็นออร์เดอร์ใหม่ทั้งหมดทุกแถว
-					jsonOrder.order.push({
-							menu_id: menuId,
+					//jsonOrder.order[menuId]= quan;
+						jsonOrder.order[menuId]= {
 							quantity: quan,
 							status: 'pending'
-					});
+						}
+						console.log(JSON.stringify(jsonOrder.order[menuId]));
+
+				//	}); .push
 
 				} // if(quan!=0)
 
 		});  // list view menu each ******
 
 		// save new order
+firebase.database().ref("Temp_Orders").push(jsonOrder);
 		if(have_data_from_firebase === true){
 			// มีอย่างน้อยหนึ่งแถวในลิสต์ที่มาจากดาต้าเบส
+			/*
 			console.log('if have data from firebase and no new order');
 
 			firebaseRefUpdateTemp_Orders.set(update_order);
@@ -325,8 +292,10 @@
 			console.log(JSON.stringify(update_order));
 			//console.log('update old order but no new order success');
 			console.log('update old order but no new order success');
+			*/
 		}
 		else if(have_data_from_firebase === false && jsonOrder.order.length > 0){
+
 			// ไม่มีแถวใดในลิสต์ที่เป็นลิสต์จากดาต้าเบสเลย
 			console.log('if all is new order');
 			//firebaseRefTemp_Orders.push(jsonOrder);
@@ -336,6 +305,7 @@
 			console.log('add new order success (no OLD order)');
 
 		}
+
 
 		change_quantity = false;
 		$("#list_view_menu .ui-li-count").removeAttr("data-update_item");
