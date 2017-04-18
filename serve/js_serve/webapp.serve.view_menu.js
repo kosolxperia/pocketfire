@@ -254,13 +254,14 @@
 
 		var orderFromDB;
 
-		//$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
-		$("#list_view_menu .ui-li-count").each(function(index){
+		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
+		//$("#list_view_menu .ui-li-count").each(function(index){
 
 			menuId = $(this).attr("data-menu_id");
 			quan = $(this).text();
 
 			if($(this).attr("data-childkey")){
+			//if($(this).attr("data-childkey") && $(this).attr("data-update_item")){
 
 				// exits in Temp_Orders
 				have_data_from_firebase  = true;
@@ -276,66 +277,25 @@
 				});
 			//firebase.database().ref("Temp_Orders/"+childkey+"/order/M3").remove();
 
-			} else {
-				have_data_from_firebase  = false;
+			}
+
+			else if(!$(this).attr("data-childkey") && $(this).attr("data-update_item")){
+			//else{
+				jsonOrder.order[menuId]= {
+					quantity: quan,
+					status: 'pending'
+				}
 			}  //end if if($(this).attr("data-childkey"))
-
-
-			//quan_element.attr("data-update_item","yes");
-				if(have_data_from_firebase === false && quan!='0'){
-				//	alert(menuId);
-					// เพิ่มตรงนี้เสมอ เพราะอาจจะเจอว่าเป็น order จาก ดาต้าเบสในลิสต์แถวล่างๆ ก็ได้
-					// เผื่อเป็นออร์เดอร์ใหม่ทั้งหมดทุกแถว
-					//jsonOrder.order[menuId]= quan;
-						jsonOrder.order[menuId]= {
-							quantity: quan,
-							status: 'pending'
-						}
-						console.log('id push is = ' +JSON.stringify(jsonOrder.order[menuId]));
-						console.log('push new order to jsonOrder');
-				//	}); .push
-
-				} // if(quan!=0)
 
 		});  // list view menu each ******
 		console.log('JSON ORDER = '+JSON.stringify(jsonOrder));
-		// save new order
 
+		// save new order
 		var keys = Object.keys(jsonOrder.order);
-		console.log('obj contains ' + keys.length + ' keys: '+  keys);
-		//var arrayLength = childData.order.length;
-		//if(jsonOrder.order.length > 0){
 		if(keys.length > 0){
 				firebase.database().ref("Temp_Orders").push(jsonOrder);
 				console.log('save jsonOrder to DB');
 		}
-
-
-		if(have_data_from_firebase === true){
-			// มีอย่างน้อยหนึ่งแถวในลิสต์ที่มาจากดาต้าเบส
-			/*
-			console.log('if have data from firebase and no new order');
-
-			firebaseRefUpdateTemp_Orders.set(update_order);
-			//firebase.database().ref("Temp_Orders/"+childkey+"/edit_time").set({'edit_time': current_time});
-			firebase.database().ref("Temp_Orders/"+childkey+"/last_edit_time").set(current_time);
-			console.log(JSON.stringify(update_order));
-			//console.log('update old order but no new order success');
-			console.log('update old order but no new order success');
-			*/
-		}
-		else if(have_data_from_firebase === false && jsonOrder.order.length > 0){
-			/*
-			// ไม่มีแถวใดในลิสต์ที่เป็นลิสต์จากดาต้าเบสเลย
-			console.log('if all is new order');
-			//firebaseRefTemp_Orders.push(jsonOrder);
-			firebase.database().ref("Temp_Orders").push(jsonOrder);
-			//firebaseRefUpdateTemp_Orders.push(jsonOrder);
-			console.log(JSON.stringify(jsonOrder));
-			console.log('add new order success (no OLD order)');
-			*/
-		}
-
 
 		change_quantity = false;
 		$("#list_view_menu .ui-li-count").removeAttr("data-update_item");
