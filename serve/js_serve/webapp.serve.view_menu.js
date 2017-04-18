@@ -260,9 +260,30 @@
 			menuId = $(this).attr("data-menu_id");
 			quan = $(this).text();
 
+			if($(this).attr("data-childkey")){
+
+				// exits in Temp_Orders
+				have_data_from_firebase  = true;
+				console.log('found old order.......');
+				childkey = $(this).attr("data-childkey");
+				//menuId = $(this).attr("data-menu_id");
+				//newQuan = $(this).text();
+				firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order/"+menuId);
+				firebaseRefUpdateTemp_Orders.set({
+						quantity: quan,
+						status: 'pending',
+						edit_time: current_time
+				});
+			//firebase.database().ref("Temp_Orders/"+childkey+"/order/M3").remove();
+
+
+		} else{
+			have_data_from_firebase  = false;
+		}  //end if if($(this).attr("data-childkey"))
+
 
 			//quan_element.attr("data-update_item","yes");
-				if(quan!='0'){
+				if(have_data_from_firebase === false && quan!='0'){
 				//	alert(menuId);
 					// เพิ่มตรงนี้เสมอ เพราะอาจจะเจอว่าเป็น order จาก ดาต้าเบสในลิสต์แถวล่างๆ ก็ได้
 					// เผื่อเป็นออร์เดอร์ใหม่ทั้งหมดทุกแถว
@@ -280,7 +301,11 @@
 		});  // list view menu each ******
 
 		// save new order
-firebase.database().ref("Temp_Orders").push(jsonOrder);
+		if(have_data_from_firebase === false && jsonOrder.order.length > 0){
+				firebase.database().ref("Temp_Orders").push(jsonOrder);
+		}
+
+		
 		if(have_data_from_firebase === true){
 			// มีอย่างน้อยหนึ่งแถวในลิสต์ที่มาจากดาต้าเบส
 			/*
