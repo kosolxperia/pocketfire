@@ -73,32 +73,21 @@
 					//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
 					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
 				}
-		
 
-/*
-				var arrayLength = childData.order.length;
-				for (var i = 0; i < arrayLength; i++) {
-
-					console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
-					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
-
-				}
-*/
 			});
 
 			firebaseRefTemp_Orders.on('child_added', function(data) {
-				/*
+
 				var childData = data.val();
 				//console.log('child ADD childData = '+JSON.stringify(childData));
 				console.log('child ADD');
-				var arrayLength = childData.order.length;
-				for (var i = 0; i < arrayLength; i++) {
-
+				var keys = Object.keys(childData.order);
+				for (var i = 0; i < keys.length; i++) {
+						var keyname = keys[i];
 					//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
-					UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
-
+					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
 				}
-				*/
+
 			});
 
 			firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
