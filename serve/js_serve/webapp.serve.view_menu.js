@@ -254,6 +254,8 @@
 
 		var orderFromDB;
 
+		var firebaseRefNewOrders=firebase.database().ref("Temp_Orders").push();
+
 		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
 		//$("#list_view_menu .ui-li-count").each(function(index){
 
@@ -281,6 +283,8 @@
 
 			else if(!$(this).attr("data-childkey") && $(this).attr("data-update_item")){
 			//else{
+				$(this).attr("data-childkey", firebaseRefNewOrders.key);
+
 				jsonOrder.order[menuId]= {
 					quantity: quan,
 					status: 'pending'
@@ -293,7 +297,8 @@
 		// save new order
 		var keys = Object.keys(jsonOrder.order);
 		if(keys.length > 0){
-				firebase.database().ref("Temp_Orders").push(jsonOrder);
+				//firebase.database().ref("Temp_Orders").push(jsonOrder);
+				firebaseRefNewOrders.set(jsonOrder);
 				console.log('save jsonOrder to DB');
 		}
 
