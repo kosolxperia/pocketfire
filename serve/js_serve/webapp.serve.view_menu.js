@@ -276,10 +276,9 @@
 				});
 			//firebase.database().ref("Temp_Orders/"+childkey+"/order/M3").remove();
 
-
-		} else{
-			have_data_from_firebase  = false;
-		}  //end if if($(this).attr("data-childkey"))
+			} else {
+				have_data_from_firebase  = false;
+			}  //end if if($(this).attr("data-childkey"))
 
 
 			//quan_element.attr("data-update_item","yes");
@@ -292,20 +291,26 @@
 							quantity: quan,
 							status: 'pending'
 						}
-						console.log(JSON.stringify(jsonOrder.order[menuId]));
-
+						console.log('id push is = ' +JSON.stringify(jsonOrder.order[menuId]));
+						console.log('push new order to jsonOrder');
 				//	}); .push
 
 				} // if(quan!=0)
 
 		});  // list view menu each ******
-
+		console.log('JSON ORDER = '+JSON.stringify(jsonOrder));
 		// save new order
-		if(have_data_from_firebase === false && jsonOrder.order.length > 0){
+
+		var keys = Object.keys(jsonOrder.order);
+		console.log('obj contains ' + keys.length + ' keys: '+  keys);
+		//var arrayLength = childData.order.length;
+		//if(jsonOrder.order.length > 0){
+		if(keys.length > 0){
 				firebase.database().ref("Temp_Orders").push(jsonOrder);
+				console.log('save jsonOrder to DB');
 		}
 
-		
+
 		if(have_data_from_firebase === true){
 			// มีอย่างน้อยหนึ่งแถวในลิสต์ที่มาจากดาต้าเบส
 			/*
@@ -320,7 +325,7 @@
 			*/
 		}
 		else if(have_data_from_firebase === false && jsonOrder.order.length > 0){
-
+			/*
 			// ไม่มีแถวใดในลิสต์ที่เป็นลิสต์จากดาต้าเบสเลย
 			console.log('if all is new order');
 			//firebaseRefTemp_Orders.push(jsonOrder);
@@ -328,7 +333,7 @@
 			//firebaseRefUpdateTemp_Orders.push(jsonOrder);
 			console.log(JSON.stringify(jsonOrder));
 			console.log('add new order success (no OLD order)');
-
+			*/
 		}
 
 
