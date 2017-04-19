@@ -5,7 +5,7 @@
 	var firebaseRefTemp_Orders;
 
 	$(document).on("pageinit", "#page-view_menu", function(){
-		var active_category = parseInt(sessionStorage.activeCategory);
+		var active_category = sessionStorage.activeCategory;
 		console.log('active category = '+ active_category);
 
 		// .equalTo use integer data !!!!
