@@ -5,6 +5,9 @@
 	var firebaseRefTemp_Orders;
 
 	$(document).on("pageinit", "#page-view_menu", function(){
+
+		sessionStorage.fromPage="view_menu";
+		
 		var active_category = sessionStorage.activeCategory;
 		console.log('active category = '+ active_category);
 

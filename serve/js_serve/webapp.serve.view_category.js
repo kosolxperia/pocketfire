@@ -1,7 +1,7 @@
 (function($){
 
 	$(document).on("pageinit", "#page-view_category", function(){
-
+		sessionStorage.fromPage="view_category";
 		var firebaseRef = firebase.database().ref("Category");
 
 		loadFirebaseData();
