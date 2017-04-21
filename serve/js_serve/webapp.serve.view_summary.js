@@ -4,12 +4,26 @@
 	    parts.forEach(function (p) {
 	        if (p && typeof (p) === 'object') {
 	            for (var k in p) {
+					//console.log('k = '+k);
+				//	console.log('p ='+JSON.stringify(p));
 	                if (p.hasOwnProperty(k)) {
+						//console.log("yes has own property k ja");
 	                    base[k] = p[k];
+						//console.log('base k = '+JSON.stringify(base[k])+" and p[k] = "+ JSON.stringify(p[k]));
 	                }
 	            }
 	        }
 	    });
+
+		var parts2 = Array.prototype.slice.call(arguments, 3);
+		console.log('part2 ='+JSON.stringify(parts2));
+	    parts2.forEach(function (p2) {
+			for (var k2 in p2) {
+console.log('k2 ='+k2);
+	console.log('p2 ='+JSON.stringify(p2));
+			}
+
+		});
 	    return base;
 	}
 		var firebaseRefMenu;
@@ -25,62 +39,29 @@
 
 			function loadFirebaseData(){
 				//console.log('run loadFirebaseData()...');
-firebaseRefMenu = firebase.database().ref("Menu");
-				firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-
-
-firebaseRefTemp_Orders.once('value', function(childSnapshot) {
-
-	var childData = childSnapshot.val();
-
 var temp={};
-   firebaseRefMenu.once('value', function(menuSnap) {
-       // extend function: https://gist.github.com/katowulf/6598238
-       //console.log( extend({}, childData.order, menuSnap.val()) );
-			 temp=extend(temp, childData.order, menuSnap.val());
-			 //order_join_menu_data.push(temp);
-			 console.log('temp =' + JSON.stringify(temp));
-			 temp=order_join_menu_data;
-			 console.log(temp.M1);
-			 //console.log('in loop extend' + JSON.stringify(order_join_menu_data);
-			 //console.log('after extend ='+order_join_menu_data;
-	 });
+var fb = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable)).once('value', function(orderSnap) {
 
-	 //console.log('after  ='+ JSON.stringify(order_join_menu_data));
-console.log(temp.M1);
-		$.each(order_join_menu_data, function(index, value){
-			console.log(index + " and " +value);
-		});
-//console.log('order jon menu data  =' +order_join_menu_data[0].M1.menu_name);
- 	//var keys = Object.keys(order_join_menu_data);
-	/*
- 	console.log('obj contains ' + keys.length + ' keys: '+  keys);
- 	//var arrayLength = childData.order.length;
- 	for (var i = 0; i < keys.length; i++) {
-		var keyname = keys[i];
-		UIUpdateListSummary(order_join_menu_data[keyname]);
- 	}
-*/
+	orderSnap.forEach(function(childSnapshot) {
+
+   firebase.database().ref("Menu").once('value', function(menuSnap) {
+       // extend function: https://gist.github.com/katowulf/6598238
+	   console.log('ordersnap.val= '+JSON.stringify(childSnapshot.val().order));
+	    console.log('menusnap.val= '+JSON.stringify(menuSnap.val()));
+       //console.log( extend({}, childSnapshot.val().order, menuSnap.val()) );
+	   temp= extend(temp, childSnapshot.val().order, menuSnap.val());
+	   console.log('temp =' + JSON.stringify(temp));
+   });
+
+
+}); // orderSnap.forEach
 
 });
-				/*
-				// 1. โหลดดาต้าเบส Menu ก่อน
-				firebaseRefMenu = firebase.database().ref("Menu");
-				firebaseRefMenu.once('value', function(snapshot) {
 
-						menu_data = snapshot.val();
-						// delay
-						// 2. โหลด temp_orders หลังจากโหลด Menu เสร็จแล้ว
-						firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+//temp=extend(temp, childData.order, menu_data);
 
-						firebaseRefTemp_Orders.once('value', function(snapshot) {
-							UIUpdateListSummary(snapshot);
-						});  //firebase once
 
-				//
 
-				});  //firebase once
-				*/
 
 			}
 
