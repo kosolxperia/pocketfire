@@ -1,8 +1,21 @@
 (function($){
-
+	function extend(base) {
+	    var parts = Array.prototype.slice.call(arguments, 1);
+	    parts.forEach(function (p) {
+	        if (p && typeof (p) === 'object') {
+	            for (var k in p) {
+	                if (p.hasOwnProperty(k)) {
+	                    base[k] = p[k];
+	                }
+	            }
+	        }
+	    });
+	    return base;
+	}
 		var firebaseRefMenu;
 		var firebaseRefTemp_Orders;
 		var menu_data;
+		var order_join_menu_data = {};
 
 		$(document).on("pageinit", "#page-view_summary", function(){
 			var back_to_page;
@@ -12,15 +25,50 @@
 
 			function loadFirebaseData(){
 				//console.log('run loadFirebaseData()...');
+firebaseRefMenu = firebase.database().ref("Menu");
+				firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
 
+
+firebaseRefTemp_Orders.once('value', function(childSnapshot) {
+
+	var childData = childSnapshot.val();
+
+var temp={};
+   firebaseRefMenu.once('value', function(menuSnap) {
+       // extend function: https://gist.github.com/katowulf/6598238
+       //console.log( extend({}, childData.order, menuSnap.val()) );
+			 temp=extend(temp, childData.order, menuSnap.val());
+			 //order_join_menu_data.push(temp);
+			 console.log('temp =' + JSON.stringify(temp));
+			 temp=order_join_menu_data;
+			 console.log(temp.M1);
+			 //console.log('in loop extend' + JSON.stringify(order_join_menu_data);
+			 //console.log('after extend ='+order_join_menu_data;
+	 });
+
+	 //console.log('after  ='+ JSON.stringify(order_join_menu_data));
+console.log(temp.M1);
+		$.each(order_join_menu_data, function(index, value){
+			console.log(index + " and " +value);
+		});
+//console.log('order jon menu data  =' +order_join_menu_data[0].M1.menu_name);
+ 	//var keys = Object.keys(order_join_menu_data);
+	/*
+ 	console.log('obj contains ' + keys.length + ' keys: '+  keys);
+ 	//var arrayLength = childData.order.length;
+ 	for (var i = 0; i < keys.length; i++) {
+		var keyname = keys[i];
+		UIUpdateListSummary(order_join_menu_data[keyname]);
+ 	}
+*/
+
+});
+				/*
 				// 1. โหลดดาต้าเบส Menu ก่อน
 				firebaseRefMenu = firebase.database().ref("Menu");
 				firebaseRefMenu.once('value', function(snapshot) {
 
 						menu_data = snapshot.val();
-						//console.log('menu_data = '+JSON.stringify(menu_data));
-						//console.log('menu_data = ' + menu_data["M1"].menu_name);
-
 						// delay
 						// 2. โหลด temp_orders หลังจากโหลด Menu เสร็จแล้ว
 						firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
@@ -29,10 +77,10 @@
 							UIUpdateListSummary(snapshot);
 						});  //firebase once
 
-						//
+				//
 
 				});  //firebase once
-
+				*/
 
 			}
 
