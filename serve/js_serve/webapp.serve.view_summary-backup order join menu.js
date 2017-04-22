@@ -1,5 +1,5 @@
 (function($){
-	var order_temp_orders={};
+	var order_temp_orders;
 	function MergeRecursive(obj1, obj2, keyname) {
 
   		for (var k in obj2) {
@@ -52,10 +52,9 @@ var keyname;
 
 var fb = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable)).once('value', function(orderSnap) {
 
-
 	orderSnap.forEach(function(childSnapshot) {
 		var child_order_snap=childSnapshot.val();
-		//order_temp_orders={};
+		order_temp_orders={};
 
 		   firebase.database().ref("Menu").once('value', function(menuSnap) {
 
@@ -69,10 +68,7 @@ var fb = firebase.database().ref("Temp_Orders").orderByChild("table_number").equ
 
 			   //temp=MergeRecursive(temp, menuSnap.val(), childSnapshot.val().order);
 			   console.log('temp =' + JSON.stringify(temp));
-			   return Promise.all(order_temp_orders);
-		   }).then(function(order_temp_orders){
-		   	console.log('then order_temp_orders ='+ JSON.stringify(order_temp_orders));
-		});
+		   });
 
 	   }); // orderSnap.forEach
 
