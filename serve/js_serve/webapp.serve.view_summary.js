@@ -1,5 +1,5 @@
 (function($){
-	var order_temp_orders={};
+
 	function MergeRecursive(obj1, obj2, keyname) {
 
   		for (var k in obj2) {
@@ -8,24 +8,6 @@
 		  if(k==keyname){
 			  console.log('inside if p==keyname '+k);
 			  obj1[k].menu_data=obj2[k];
-
-				/*
-				    try {
-				      // Property in destination object set; update its value.
-				      if ( obj2[p].constructor==Object ) {
-				        obj1[p] = MergeRecursive(obj1[p], obj2[p]);
-
-				      } else {
-				        obj1[p] = obj2[p];
-
-				      }
-
-				    } catch(e) {
-				      // Property in destination object not set; create it and set its value.
-				      obj1[p] = obj2[p];
-
-				  } //catch
-				*/
 				  } //  if(obj2[p]==keyname)
 
 				} // for
@@ -35,8 +17,8 @@
 
 		var firebaseRefMenu;
 		var firebaseRefTemp_Orders;
-		//var menu_data;
 		var order_join_menu_data = {};
+		var order_temp_orders={};
 
 		$(document).on("pageinit", "#page-view_summary", function(){
 			var back_to_page;
@@ -45,40 +27,37 @@
 			loadFirebaseData();
 
 			function loadFirebaseData(){
-				//console.log('run loadFirebaseData()...');
-var temp={};
-var keyname;
+
+				var temp={};
+				var keyname;
+
+				var fb = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable)).once('value', function(orderSnap) {
 
 
-var fb = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable)).once('value', function(orderSnap) {
+					orderSnap.forEach(function(childSnapshot) {
+						var child_order_snap=childSnapshot.val();
+						//order_temp_orders={};
 
+						   	firebase.database().ref("Menu").once('value', function(menuSnap) {
 
-	orderSnap.forEach(function(childSnapshot) {
-		var child_order_snap=childSnapshot.val();
-		//order_temp_orders={};
+								   for (var k in child_order_snap.order){
+									   keyname = k;
+									   console.log('key ='+k);
+								   }
+								   //console.log('key order= '+childSnapshot.val().order)
+								   temp=MergeRecursive(child_order_snap.order, menuSnap.val(), keyname);
+								   $.extend(order_temp_orders,temp);
+								   console.log('temp =' + JSON.stringify(temp));
+								   return Promise.all(order_temp_orders);
+						   	}).then(function(order_temp_orders){
+						   			console.log('then order_temp_orders ='+ JSON.stringify(order_temp_orders));
+								});
 
-		   firebase.database().ref("Menu").once('value', function(menuSnap) {
+					  }); // orderSnap.forEach
 
-			   for (var k in child_order_snap.order){
-				   keyname = k;
-				   console.log('key ='+k);
-			   }
-			   //console.log('key order= '+childSnapshot.val().order)
-			   temp=MergeRecursive(child_order_snap.order, menuSnap.val(), keyname);
-			   $.extend(order_temp_orders,temp);
+				});// order temp .once
 
-			   //temp=MergeRecursive(temp, menuSnap.val(), childSnapshot.val().order);
-			   console.log('temp =' + JSON.stringify(temp));
-			   return Promise.all(order_temp_orders);
-		   }).then(function(order_temp_orders){
-		   	console.log('then order_temp_orders ='+ JSON.stringify(order_temp_orders));
-		});
-
-	   }); // orderSnap.forEach
-
-});// order temp .once
-
-			}
+			} // function loadFirebaseData()
 
 			//หากมาจาก page ดูรายเมนูอาหารให้ใส่ id ประเภทอาหารไว้ในแอตทริบิวต์ data-cat_id
 			if(sessionStorage.fromPage="view_menu"){

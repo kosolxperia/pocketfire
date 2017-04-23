@@ -56,3 +56,36 @@ function MergeRecursive(obj1, obj2) {
   return obj1;
 }
 // end 2
+
+
+// 3. https://gist.github.com/katowulf/6598238
+function extend(base) {
+    var parts = Array.prototype.slice.call(arguments, 1);
+    parts.forEach(function (p) {
+        if (p && typeof (p) === 'object') {
+            for (var k in p) {
+                if (p.hasOwnProperty(k)) {
+                    base[k] = p[k];
+                }
+            }
+        }
+    });
+    return base;
+}
+
+/*
+use:
+
+var fb = new Firebase("https://examples-sql-queries.firebaseio.com/");
+fb.child('user/123').once('value', function(userSnap) {
+   fb.child('media/123').once('value', function(mediaSnap) {
+       // extend function: https://gist.github.com/katowulf/6598238
+       console.log( extend({}, userSnap.val(), mediaSnap.val()) );
+       var temp;
+       temp=extend(temp, userSnap.val(), mediaSnap.val())
+   });
+});
+
+*/
+
+// end 3
