@@ -38,34 +38,34 @@
 
 				var temp={};
 				var keyname;
-				var data_order_snap;
-				var data_menu_snap;
-firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable)).once('value')
-.then(function(orderSnap){
-	data_order_snap=orderSnap;
-}).then(function(){
-	//alert('then 2 '+d);
-	firebase.database().ref("Menu").once('value').then(function(menuSnap){
-		data_menu_snap=menuSnap;
-	});
-}).then(function(){
-	data_order_snap.forEach(function(childSnapshot) {
-		var child_order_snap=childSnapshot.val();
 
-		for (var k in child_order_snap.order){
-			keyname = k;
-			console.log('key ='+k);
-			temp=MergeRecursive(child_order_snap.order, data_menu_snap.val(), keyname);
-			$.extend(order_temp_orders,temp);
-		 } // for
+				var fb = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable)).once('value', function(orderSnap) {
 
-	console.log('temp =' + JSON.stringify(temp));
-	console.log('order_temp_orders =' + JSON.stringify(order_temp_orders));
-	});
 
-   UIUpdateListSummary(order_temp_orders);
+					orderSnap.forEach(function(childSnapshot) {
+						var child_order_snap=childSnapshot.val();
 
-});
+
+						   	firebase.database().ref("Menu").once('value', function(menuSnap) {
+
+								   for (var k in child_order_snap.order){
+									   keyname = k;
+									   console.log('key ='+k);
+									   temp=MergeRecursive(child_order_snap.order, menuSnap.val(), keyname);
+									   $.extend(order_temp_orders,temp);
+							   		} // for
+
+							   console.log('temp =' + JSON.stringify(temp));
+							   console.log('order_temp_orders =' + JSON.stringify(order_temp_orders));
+
+							  UIUpdateListSummary(order_temp_orders);
+						  });
+
+
+					  }); // orderSnap.forEach
+//UIUpdateListSummary(order_temp_orders);
+				});// order temp .once
+
 			} // function loadFirebaseData()
 
 			//หากมาจาก page ดูรายเมนูอาหารให้ใส่ id ประเภทอาหารไว้ในแอตทริบิวต์ data-cat_id
