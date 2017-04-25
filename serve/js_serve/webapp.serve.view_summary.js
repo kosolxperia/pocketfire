@@ -124,7 +124,7 @@ var change_quantity = false;
 
 					firebaseRefUpdateTemp_Orders.set({
 							quantity: quan,
-							status: 'pending',
+							status: 'order',
 							edit_time: current_time
 					});
 
