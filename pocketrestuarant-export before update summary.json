@@ -1,11 +1,14 @@
 {
-  "Category" : [ null, {
-    "category_name" : "อาหาร",
-    "category_picture" : "menupics/food.jpg"
-  }, {
-    "category_name" : "เครื่องดื่ม",
-    "category_picture" : "menupics/drink.jpg"
-  } ],
+  "Category" : {
+    "C1FOOD" : {
+      "category_name" : "อาหาร",
+      "category_picture" : "menupics/food.jpg"
+    },
+    "C2DRINK" : {
+      "category_name" : "เครื่องดื่ม",
+      "category_picture" : "menupics/drink.jpg"
+    }
+  },
   "DinningTable" : {
     "1A" : {
       "table_status" : "โคตรเจ๋ง"
@@ -19,37 +22,37 @@
   },
   "Menu" : {
     "M1" : {
-      "category_id" : 1,
+      "category_id" : "C1FOOD",
       "menu_name" : "ข้าวหมูแดงแจ๋อ่ะ",
       "menu_picture" : "menupics/red_pork_with_rice.jpg",
       "menu_price" : 3500
     },
     "M2" : {
-      "category_id" : 1,
+      "category_id" : "C1FOOD",
       "menu_name" : "ข้าวหน้าเป็ด",
       "menu_picture" : "menupics/roast_duck_over_rice.jpg",
       "menu_price" : 40
     },
     "M3" : {
-      "category_id" : 1,
+      "category_id" : "C1FOOD",
       "menu_name" : "ข้าวกะเพราไก่เผ็ด",
       "menu_picture" : "menupics/fried_chicken_with_basil.jpg",
       "menu_price" : 5009
     },
     "M4" : {
-      "category_id" : 2,
+      "category_id" : "C2DRINK",
       "menu_name" : "น้ำเปล่า",
       "menu_picture" : "menupics/drinking_water.jpg",
       "menu_price" : 5
     },
     "M5" : {
-      "category_id" : 2,
+      "category_id" : "C2DRINK",
       "menu_name" : "น้ำเก๊กฮวย",
       "menu_picture" : "menupics/chrysanthemum_tea.jpg",
       "menu_price" : 10
     },
     "M6" : {
-      "category_id" : 2,
+      "category_id" : "C2DRINK",
       "menu_name" : "คาปูชิโน่เย็น",
       "menu_picture" : "menupics/capuchino.jpg",
       "menu_price" : 45
@@ -91,8 +94,8 @@
     "-Ki0OOep-NJFjA0VGavU" : {
       "order" : {
         "M1" : {
-          "edit_time" : "2017-3-18 21:9:35",
-          "quantity" : "2",
+          "edit_time" : "2017-3-20 9:36:49",
+          "quantity" : "4",
           "status" : "pending"
         }
       },
