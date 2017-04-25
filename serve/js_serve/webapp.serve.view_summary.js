@@ -110,7 +110,8 @@ var change_quantity = false;
 			var quan;
 			var firebaseRefUpdateTemp_Orders;
 
-			$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
+			$("#list_summary .ui-li-count[data-update_item]").each(function(index){
+
 				menuId = $(this).attr("data-menu_id");
 				parentKey= $(this).attr("data-parentkey");
 				quan = $(this).text();
