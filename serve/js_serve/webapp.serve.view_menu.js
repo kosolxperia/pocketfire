@@ -7,7 +7,7 @@
 	$(document).on("pageinit", "#page-view_menu", function(){
 
 		sessionStorage.fromPage="view_menu";
-		
+
 		var active_category = sessionStorage.activeCategory;
 		console.log('active category = '+ active_category);
 
@@ -252,6 +252,8 @@
 
 		var d = new Date();
 		var current_time = d.getFullYear()+"-"+ d.getMonth()+"-"+d.getDate()+" "+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+
+
 		jsonOrder.table_number = sessionStorage.activeTable;
 		jsonOrder.time = current_time;
 		jsonOrder.order = [];
