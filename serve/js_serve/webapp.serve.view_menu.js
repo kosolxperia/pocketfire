@@ -79,11 +79,17 @@
 
 			});
 
+			//ar fix
+			//http://stackoverflow.com/questions/11788902/firebase-child-added-only-get-child-added
 			firebaseRefTemp_Orders.on('child_added', function(data) {
-
+			//firebaseRefTemp_Orders.limitToLast(1).on('child_added', function(data) {
 				var childData = data.val();
 				//console.log('child ADD childData = '+JSON.stringify(childData));
 				console.log('child ADD');
+
+				// ar fix
+				return false;
+
 				var keys = Object.keys(childData.order);
 				for (var i = 0; i < keys.length; i++) {
 						var keyname = keys[i];
@@ -192,6 +198,9 @@
 	function checkPendingOrder(){
 		//return false;
 		console.log('check pending order....');
+		var now = moment();
+		var diffDays;
+
 		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
 		firebaseRefTemp_Orders.once('value', function(snapshot) {
 			console.log('snapshot = ' +JSON.stringify(snapshot));
@@ -212,6 +221,14 @@
 				//var arrayLength = childData.order.length;
 				for (var i = 0; i < keys.length; i++) {
 						//alert(keys[i]);
+						alert(now);
+						alert( now.diff(childData.time.substr(0,childData.time.indexOf(' '), 'days') ) );
+					if (now.diff(childData.time.substr(0,childData.time.indexOf(' '), 'days')) < 0) {
+						console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
+						continue;
+
+					}
+					console.log('after if now diff');
 						var keyname = keys[i];
 					//	alert(childData.order[keyname]);
 						//alert(childData.order[keyname].quantity);
@@ -223,7 +240,6 @@
 					// set key เพื่อให้รู้ว่าข้อมูลนี้มาจากดาต้าเบส
 					//$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
 					$('#'+keyname+"quan").attr('data-childkey',childSnapshot.key);
-
 
 				} // for loop
 

@@ -1,7 +1,7 @@
 (function($){
 
 	$(document).on("pageinit", "#page-view_table", function(){
-		
+	
 		var firebaseRef = firebase.database().ref("DinningTable");
 
 		loadFirebaseData();

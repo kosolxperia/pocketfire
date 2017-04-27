@@ -1,6 +1,8 @@
 var d = new Date();
-var current_time = "2017-3-18 21:9:42";
+var current_time = "2017-04-26 21:19:42";
+current_time=current_time.substr(0,current_time.indexOf(' '));
 //var now = moment().format('YYYY-MM-DD HH:mm:ss');
 var now=moment();
-var diff=now.diff(current_time, 'years');
+//alert(now);
+var diff=now.diff(current_time, 'days');
 alert(diff);
