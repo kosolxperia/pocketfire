@@ -109,8 +109,9 @@ var change_quantity = false;
 			var parentKey;
 			var quan;
 			var firebaseRefUpdateTemp_Orders;
-			var d = new Date();
-			var current_time = d.getFullYear()+"-"+ d.getMonth()+"-"+d.getDate()+" "+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+			//var d = new Date();
+		//	var current_time = d.getFullYear()+"-"+ d.getMonth()+"-"+d.getDate()+" "+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+			var current_time = moment().format('YYYY-MM-DD HH:mm:ss');
 
 			$("#list_summary .ui-li-count[data-update_item]").each(function(index){
 

@@ -221,9 +221,11 @@
 				//var arrayLength = childData.order.length;
 				for (var i = 0; i < keys.length; i++) {
 						//alert(keys[i]);
-						alert(now);
-						alert( now.diff(childData.time.substr(0,childData.time.indexOf(' '), 'days') ) );
-					if (now.diff(childData.time.substr(0,childData.time.indexOf(' '), 'days')) < 0) {
+						var order_time=childData.time;
+						order_time=order_time.substr(0,order_time.indexOf(' '));
+						//alert(now);
+						//alert( now.diff(order_time, 'days'));
+					if (now.diff(order_time, 'days') > 0) {
 						console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
 						continue;
 
@@ -266,9 +268,9 @@
 		var childkey; // for old order
 		var jsonOrder = {};
 
-		var d = new Date();
-		var current_time = d.getFullYear()+"-"+ d.getMonth()+"-"+d.getDate()+" "+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-
+	//	var d = new Date();
+	//	var current_time = d.getFullYear()+"-"+ d.getMonth()+"-"+d.getDate()+" "+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+		var current_time = moment().format('YYYY-MM-DD HH:mm:ss');
 
 		jsonOrder.table_number = sessionStorage.activeTable;
 		jsonOrder.time = current_time;
