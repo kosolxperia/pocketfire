@@ -37,6 +37,10 @@
 					UIUpdateCategoryName(data.key, data.val().category_name);
 			});
 
+			firebaseRef.on('child_added', function(data) {
+				console.log('child add');
+			});
+
 		}
 
 		function UIUpdateCategoryName(key, status){

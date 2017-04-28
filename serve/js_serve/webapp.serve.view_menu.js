@@ -48,7 +48,7 @@
 		function loadFirebaseData(){
 			//console.log('run loadFirebaseData()...');
 			firebaseRefMenu.once('value', function(snapshot) {
-				UIUpdateListViewMenu(snapshot);
+					UIUpdateListViewMenu(snapshot);
 			});  //firebase once
 
 			firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
@@ -56,6 +56,7 @@
 		}
 
 		function onFirebaseChange(){
+			console.log('function onFirebaseChange....');
 
 			firebaseRefMenu.on('child_changed', function(data) {
 				console.log('child change '+ data.key + ' and ' + data.val().category_name);
@@ -82,18 +83,24 @@
 			//ar fix
 			//http://stackoverflow.com/questions/11788902/firebase-child-added-only-get-child-added
 			firebaseRefTemp_Orders.on('child_added', function(data) {
-			//firebaseRefTemp_Orders.limitToLast(1).on('child_added', function(data) {
+				var now = moment();
+				var diffDays;
 				var childData = data.val();
 				//console.log('child ADD childData = '+JSON.stringify(childData));
 				console.log('child ADD');
 
-				// ar fix
-				return false;
-
 				var keys = Object.keys(childData.order);
 				for (var i = 0; i < keys.length; i++) {
 						var keyname = keys[i];
-					//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+						var order_time=childData.time;
+						order_time=order_time.substr(0,order_time.indexOf(' '));
+
+						if (now.diff(order_time, 'days') > 0) {
+						console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
+						continue;
+
+						}
+
 					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
 				}
 
@@ -119,25 +126,26 @@
 		//	console.log(JSON.stringify(snapshot));
 			var menuHtml='';
 
-			snapshot.forEach(function(childSnapshot) {
-				var childKey = childSnapshot.key;
-				var childData = childSnapshot.val();
 
-				menuHtml += '<li data-icon="false"><a class="link_menu">';
-				menuHtml += '<img id="' + childKey +'img" src="../'+ childData.menu_picture +'"/>';
-				menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
-				menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
-				//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
-				menuHtml += '<span class="ui-li-count" id="'+ childKey +'quan" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
-				menuHtml += '</a></li>';
+				snapshot.forEach(function(childSnapshot) {
+					var childKey = childSnapshot.key;
+					var childData = childSnapshot.val();
 
-			}); //for each
+					menuHtml += '<li data-icon="false"><a class="link_menu">';
+					menuHtml += '<img id="' + childKey +'img" src="../'+ childData.menu_picture +'"/>';
+					menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
+					menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
+					//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
+					menuHtml += '<span class="ui-li-count" id="'+ childKey +'quan" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
+					menuHtml += '</a></li>';
 
-			$('#list_view_menu').append(menuHtml);
-			$('#list_view_menu').listview('refresh');
+				}); //for each
 
-			setEventListMenu();
 
+				$('#list_view_menu').append(menuHtml);
+				$('#list_view_menu').listview('refresh');
+
+				setEventListMenu();
 			//add delay for loadcomplete then check pending order
 			checkPendingOrder();
 
