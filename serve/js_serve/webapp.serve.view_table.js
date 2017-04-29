@@ -1,7 +1,18 @@
 (function($){
 
 	$(document).on("pageinit", "#page-view_table", function(){
-	
+	//console.log('firebase timestamp = ' +JSON.stringify(firebase.database.ServerValue.TIMESTAMP));
+	/*
+	var offsetRef = firebase.database().ref(".info/serverTimeOffset");
+	offsetRef.on("value", function(snap) {
+	  var offset = snap.val();
+	  alert(offset);
+	  var estimatedServerTimeMs = new Date().getTime() + offset;
+	  alert(estimatedServerTimeMs);
+	  alert(moment(estimatedServerTimeMs));
+	});
+	*/
+
 		var firebaseRef = firebase.database().ref("DinningTable");
 
 		loadFirebaseData();

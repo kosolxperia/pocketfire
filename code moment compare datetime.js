@@ -6,3 +6,12 @@ var now=moment();
 //alert(now);
 var diff=now.diff(current_time, 'days');
 alert(diff);
+
+********
+
+var firebasetime=moment(childData.order[keyname].firebase_timestamp);
+//alert(now);
+var diff=moment().diff(firebasetime, 'seconds');
+alert(diff);
+
+*******

@@ -93,13 +93,19 @@
 				for (var i = 0; i < keys.length; i++) {
 						var keyname = keys[i];
 						var order_time=childData.time;
-						order_time=order_time.substr(0,order_time.indexOf(' '));
+					//	order_time=order_time.substr(0,order_time.indexOf(' '));
+					var firebasetime=moment(childData.firebase_timestamp);
+					var diff = moment().diff(firebasetime, 'seconds');
+					console.log('diff in child Add = '+diff);
 
-						if (now.diff(order_time, 'days') > 0) {
-						console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
+						//if (now.diff(order_time, 'days') > 0) {
+						if(parseInt(diff) > 5){
+						console.log('found very old order > 5 seconds = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
 						continue;
 
 						}
+
+					console.log('**** call UIUpdateQuantity from event child ADD ****');
 
 					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
 				}
@@ -107,7 +113,7 @@
 			});
 
 			firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
-			  console.log('child REMOVED = '+ console.log(JSON.Stringify(oldChildSnapshot)));
+			  console.log('child REMOVED = '+ console.log(JSON.stringify(oldChildSnapshot)));
 			});
 
 
@@ -224,6 +230,7 @@
 				//console.log('order key = ' +JSON.stringify(childData.order['M1'].quantity));
 				console.log('AAAAA order menuid ='+childData.table_number);
 
+
 				var keys = Object.keys(childData.order);
 				console.log('obj contains ' + keys.length + ' keys: '+  keys);
 				//var arrayLength = childData.order.length;
@@ -246,7 +253,14 @@
 				//	UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
 					console.log('key is ' + childSnapshot.key);
-
+					/*
+console.log('firebase time stamp = '+moment(childData.order[keyname].firebase_timestamp));
+//alert(moment(childData.order[keyname].firebase_timestamp));
+var firebasetime=moment(childData.order[keyname].firebase_timestamp);
+//alert(now);
+var diff=moment().diff(firebasetime, 'seconds');
+alert(diff);
+*/
 					// set key เพื่อให้รู้ว่าข้อมูลนี้มาจากดาต้าเบส
 					//$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
 					$('#'+keyname+"quan").attr('data-childkey',childSnapshot.key);
@@ -282,6 +296,7 @@
 
 		jsonOrder.table_number = sessionStorage.activeTable;
 		jsonOrder.time = current_time;
+		jsonOrder.firebase_timestamp = firebase.database.ServerValue.TIMESTAMP;
 		jsonOrder.order = [];
 
 		var update_order = [];
