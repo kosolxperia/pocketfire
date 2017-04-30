@@ -1,161 +1,164 @@
-var ModuleViewMenu = (function($) {
+(function($){
 
-	var firebaseRefMenu;
-	var firebaseRef2;
 	var change_quantity = false;
 	var firebaseRefMenu;
 	var firebaseRefTemp_Orders;
-	var active_category;
-	var tableNum;
 
+	$(document).on("pageinit", "#page-view_menu", function(){
 
-	var init = function() {
-		console.log('viewmenu init...');
-		active_category = sessionStorage.activeCategory;
-		firebaseRefMenu = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
-		firebaseRef2 = firebase.database().ref("Category").orderByKey().equalTo(String(active_category));
-		tableNum = $('.table_num');
 		sessionStorage.fromPage="view_menu";
 
+		var active_category = sessionStorage.activeCategory;
 		console.log('active category = '+ active_category);
 
+		// .equalTo use integer data !!!!
+		firebaseRefMenu = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
+		var tableNum;
 		checkActiveTable();
 
 		loadFirebaseData();
 		onFirebaseChange();
 		showCategoryName();
 		setEventBtnSummaryMenu();
-		onPageHide();
-		//bindEvents();
-	};
+		//checkPendingOrder();
 
-	var showCategoryName = function(){
-		//orderByKey use String!!!!
-		firebaseRef2 = firebase.database().ref("Category").orderByKey().equalTo(String(active_category));
-		firebaseRef2.once('value', function(snapshot) {
-			snapshot.forEach(function(childSnapshot) {
-				$('#category-name').html(childSnapshot.val().category_name);
-			});
-		}); //once
-	};
+		function showCategoryName(){
 
-	var checkActiveTable = function(){
-	//	tableNum = $('.table_num');
+			//orderByKey use String!!!!
+			var firebaseRef2 = firebase.database().ref("Category").orderByKey().equalTo(String(active_category));
+			firebaseRef2.once('value', function(snapshot) {
+				snapshot.forEach(function(childSnapshot) {
+					$('#category-name').html(childSnapshot.val().category_name);
+				});
+			}); //once
 
-		if(sessionStorage.activeTable){
-			tableNum.html('โต๊ะ '+sessionStorage.activeTable);
-		}else{
-			tableNum.html('ไม่ได้เลือกโต๊ะ');
 		}
-	};
 
-	var loadFirebaseData = function() {
-		firebaseRefMenu.once('value', function(snapshot) {
-				UIUpdateListViewMenu(snapshot);
-		});  //firebase once
+		function checkActiveTable(){
+			tableNum = $('.table_num');
 
-		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-		//firebaseRefTemp_Orders.orderByChild("time");
-	};
-
-	var onFirebaseChange = function() {
-		console.log('function onFirebaseChange....');
-
-		firebaseRefMenu.on('child_changed', function(data) {
-			console.log('child change '+ data.key + ' and ' + data.val().category_name);
-				//$('#'+data.key).text(data.val().category_name);
-				UIUpdateMenu(data.key, data.val());
-		});
-
-
-		//Temp_Orders
-		firebaseRefTemp_Orders.on('child_changed', function(data) {
-
-			var childData = data.val();
-			console.log('child CHANGE childData = '+JSON.stringify(childData));
-
-			var keys = Object.keys(childData.order);
-			//console.log('key.length = '+keys.length);
-			for (var i = 0; i < keys.length; i++) {
-					var keyname = keys[i];
-				//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
-				UIUpdateQuantity(keyname, childData.order[keyname].quantity);
-			}
-		});
-
-		//ar fix
-		//http://stackoverflow.com/questions/11788902/firebase-child-added-only-get-child-added
-		firebaseRefTemp_Orders.on('child_added', function(data) {
-			var now = moment();
-			var diffDays;
-			var childData = data.val();
-			//console.log('child ADD childData = '+JSON.stringify(childData));
-			console.log('child ADD');
-
-			var keys = Object.keys(childData.order);
-			for (var i = 0; i < keys.length; i++) {
-					var keyname = keys[i];
-					var order_time=childData.time;
-				//	order_time=order_time.substr(0,order_time.indexOf(' '));
-				var firebasetime=moment(childData.firebase_timestamp);
-				var diff = moment().diff(firebasetime, 'seconds');
-				console.log('diff in child Add = '+diff);
-
-					//if (now.diff(order_time, 'days') > 0) {
-					if(parseInt(diff) > 5){
-					console.log('found very old order > 5 seconds = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
-					continue;
-
-					}
-
-				console.log('**** call UIUpdateQuantity from event child ADD ****');
-
-				UIUpdateQuantity(keyname, childData.order[keyname].quantity);
+			if(sessionStorage.activeTable){
+				tableNum.html('โต๊ะ '+sessionStorage.activeTable);
+			}else{
+				tableNum.html('ไม่ได้เลือกโต๊ะ');
 			}
 
-		});
+		}
 
-		firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
-		  console.log('child REMOVED = '+ console.log(JSON.stringify(oldChildSnapshot)));
-		});
-	};
+		function loadFirebaseData(){
+			//console.log('run loadFirebaseData()...');
+			firebaseRefMenu.once('value', function(snapshot) {
+					UIUpdateListViewMenu(snapshot);
+			});  //firebase once
 
-	var UIUpdateMenu = function(key, data){
-		$('#' + key).text(data.menu_name);
-		$('#' + key +'price').text(data.menu_price);
-		$('#' + key +'img').attr('src','../' + data.menu_picture);
-	};
+			firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+			//firebaseRefTemp_Orders.orderByChild("time");
+		}
 
-	var UIUpdateListViewMenu = function(snapshot){
-		console.log('run UIUdatelistviewmenu...');
+		function onFirebaseChange(){
+			console.log('function onFirebaseChange....');
+
+			firebaseRefMenu.on('child_changed', function(data) {
+				console.log('child change '+ data.key + ' and ' + data.val().category_name);
+					//$('#'+data.key).text(data.val().category_name);
+					UIUpdateMenu(data.key, data.val());
+			});
+
+
+			//Temp_Orders
+			firebaseRefTemp_Orders.on('child_changed', function(data) {
+
+				var childData = data.val();
+				console.log('child CHANGE childData = '+JSON.stringify(childData));
+
+				var keys = Object.keys(childData.order);
+				for (var i = 0; i < keys.length; i++) {
+						var keyname = keys[i];
+					//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
+				}
+
+			});
+
+			//ar fix
+			//http://stackoverflow.com/questions/11788902/firebase-child-added-only-get-child-added
+			firebaseRefTemp_Orders.on('child_added', function(data) {
+				var now = moment();
+				var diffDays;
+				var childData = data.val();
+				//console.log('child ADD childData = '+JSON.stringify(childData));
+				console.log('child ADD');
+
+				var keys = Object.keys(childData.order);
+				for (var i = 0; i < keys.length; i++) {
+						var keyname = keys[i];
+						var order_time=childData.time;
+					//	order_time=order_time.substr(0,order_time.indexOf(' '));
+					var firebasetime=moment(childData.firebase_timestamp);
+					var diff = moment().diff(firebasetime, 'seconds');
+					console.log('diff in child Add = '+diff);
+
+						//if (now.diff(order_time, 'days') > 0) {
+						if(parseInt(diff) > 5){
+						console.log('found very old order > 5 seconds = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
+						continue;
+
+						}
+
+					console.log('**** call UIUpdateQuantity from event child ADD ****');
+
+					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
+				}
+
+			});
+
+			firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
+			  console.log('child REMOVED = '+ console.log(JSON.stringify(oldChildSnapshot)));
+			});
+
+
+		}
+
+		function UIUpdateMenu(key, data){
+				$('#' + key).text(data.menu_name);
+				$('#' + key +'price').text(data.menu_price);
+				$('#' + key +'img').attr('src','../' + data.menu_picture);
+
+		}
+
+		function UIUpdateListViewMenu(snapshot){
+
+			console.log('run UIUdatelistviewmenu...');
 		//	console.log(JSON.stringify(snapshot));
-		var menuHtml='';
+			var menuHtml='';
 
 
-			snapshot.forEach(function(childSnapshot) {
-				var childKey = childSnapshot.key;
-				var childData = childSnapshot.val();
+				snapshot.forEach(function(childSnapshot) {
+					var childKey = childSnapshot.key;
+					var childData = childSnapshot.val();
 
-				menuHtml += '<li data-icon="false"><a class="link_menu">';
-				menuHtml += '<img id="' + childKey +'img" src="../'+ childData.menu_picture +'"/>';
-				menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
-				menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
-				//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
-				menuHtml += '<span class="ui-li-count" id="'+ childKey +'quan" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
-				menuHtml += '</a></li>';
+					menuHtml += '<li data-icon="false"><a class="link_menu">';
+					menuHtml += '<img id="' + childKey +'img" src="../'+ childData.menu_picture +'"/>';
+					menuHtml += '<h1 id="' + childKey +'">'+ childData.menu_name +'</h1>';
+					menuHtml += '<p><span id="'+ childKey +'price">'+ childData.menu_price +'</span> บาท</p>';
+					//menuHtml += '<span class="ui-li-count" id="'+ childKey +'" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
+					menuHtml += '<span class="ui-li-count" id="'+ childKey +'quan" data-menu_id="'+ childKey +'">'+ '0'+'</span>';
+					menuHtml += '</a></li>';
 
-			}); //for each
+				}); //for each
 
 
-			$('#list_view_menu').append(menuHtml);
-			$('#list_view_menu').listview('refresh');
+				$('#list_view_menu').append(menuHtml);
+				$('#list_view_menu').listview('refresh');
 
-			setEventListMenu();
+				setEventListMenu();
 			//add delay for loadcomplete then check pending order
 			checkPendingOrder();
-	};
 
-	var setEventListMenu = function() {
+		}
+
+	function setEventListMenu(){
+
 		$(".link_menu").on("tap", function(){
 			console.log('tapppp ja');
 			var quan_element = $(this).find("span.ui-li-count");
@@ -187,9 +190,9 @@ var ModuleViewMenu = (function($) {
 			change_quantity = true;
 		}); //.link_menu swipeleft
 
-	};
+	}
 
-	var setEventBtnSummaryMenu = function() {
+	function setEventBtnSummaryMenu(){
 
 		$("#btn_summary_menu").on("click",function(){
 			console.log('button summary click...');
@@ -203,14 +206,11 @@ var ModuleViewMenu = (function($) {
 			}
 
 		}); //btn_summary_menu
-	};
 
-	var UIUpdateQuantity = function(menu_id, quantity) {
-		console.log('fn UIUpdateQuantity....');
-		$('#'+menu_id+'quan').text(quantity);
-	};
+	}
 
-	var checkPendingOrder = function() {
+	function checkPendingOrder(){
+		//return false;
 		console.log('check pending order....');
 		var now = moment();
 		var diffDays;
@@ -224,37 +224,60 @@ var ModuleViewMenu = (function($) {
 				console.log('found pending order');
 
 				var childData = childSnapshot.val();
+				//var childData = childSnapshot;
 				console.log('test = ' +JSON.stringify(childData));
+				//console.log('child val = ' +JSON.stringify(childData);
+				//console.log('order key = ' +JSON.stringify(childData.order['M1'].quantity));
 				console.log('AAAAA order menuid ='+childData.table_number);
 
 
 				var keys = Object.keys(childData.order);
 				console.log('obj contains ' + keys.length + ' keys: '+  keys);
-
+				//var arrayLength = childData.order.length;
 				for (var i = 0; i < keys.length; i++) {
+						//alert(keys[i]);
 						var order_time=childData.time;
 						order_time=order_time.substr(0,order_time.indexOf(' '));
+						//alert(now);
+						//alert( now.diff(order_time, 'days'));
 					if (now.diff(order_time, 'days') > 0) {
 						console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
 						continue;
 
 					}
 					console.log('after if now diff');
-					var keyname = keys[i];
-
+						var keyname = keys[i];
+					//	alert(childData.order[keyname]);
+						//alert(childData.order[keyname].quantity);
+					//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
+				//	UIUpdateQuantity(childData.order[i].menu_id, childData.order[i].quantity);
 					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
 					console.log('key is ' + childSnapshot.key);
-
+					/*
+console.log('firebase time stamp = '+moment(childData.order[keyname].firebase_timestamp));
+//alert(moment(childData.order[keyname].firebase_timestamp));
+var firebasetime=moment(childData.order[keyname].firebase_timestamp);
+//alert(now);
+var diff=moment().diff(firebasetime, 'seconds');
+alert(diff);
+*/
 					// set key เพื่อให้รู้ว่าข้อมูลนี้มาจากดาต้าเบส
+					//$('#'+childData.order[i].menu_id+"quan").attr('data-childkey',childSnapshot.key);
 					$('#'+keyname+"quan").attr('data-childkey',childSnapshot.key);
 
 				} // for loop
 
 			}); //for each
 		});  //firebase once
-	};
+	}
 
-	var sendOrder = function() {
+	function UIUpdateQuantity(menu_id, quantity){
+		console.log('fn UIUpdateQuantity....');
+		$('#'+menu_id+'quan').text(quantity);
+	}
+
+	function sendOrder(){
+
 		if(change_quantity === false){
 			return false;
 		}
@@ -348,26 +371,21 @@ var ModuleViewMenu = (function($) {
 		$("#list_view_menu .ui-li-count").removeAttr("data-update_item");
 
 		//$.mobile.changePage( "view_summary.html");
-	};
 
-	var onPageHide = function() {
-		$(document).on("pagebeforehide", "#page-view_menu", function(){
+	}
 
-			if(change_quantity === false){
-				return false;
-			}
+	$(document).on("pagebeforehide", "#page-view_menu", function(){
 
-			sendOrder();
+		if(change_quantity === false){
+			return false;
+		}
 
-		}); //before page hide
-	};
+		sendOrder();
 
-	return {
-		init: init
-	};
+	}); //before page hide
+
+
+
+});
 
 })(jQuery);
-
-$(document).on("pageinit", "#page-view_menu", function(){
-	ModuleViewMenu.init();
-});

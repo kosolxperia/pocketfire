@@ -1,88 +1,85 @@
-(function($){
+var ViewCategoryModule = (function($) {
 
-	$(document).on("pageinit", "#page-view_category", function(){
+	var firebaseRef = firebase.database().ref("Category");
+
+	var init = function() {
+		console.log('init')
 		sessionStorage.fromPage="view_category";
-		var firebaseRef = firebase.database().ref("Category");
-
 		loadFirebaseData();
 		onFirebaseChange();
 		checkActiveTable();
+	};
 
-		function checkActiveTable(){
+	var loadFirebaseData = function(){
+		firebaseRef.once('value', function(snapshot) {
+			UIUpdateListViewCategory(snapshot);
+		});  //firebase once
+	};
 
-			var tableNum = $('.table_num');
-			console.log('active table = '+sessionStorage.activeTable);
+	var onFirebaseChange = function(){
+		firebaseRef.on('child_changed', function(data) {
+			console.log('child change '+ data.key + ' and ' + data.val().category_name);
+				//$('#'+data.key).text(data.val().category_name);
+				UIUpdateCategoryName(data.key, data.val().category_name);
+		});
 
-			if(sessionStorage.activeTable){
-				tableNum.html('โต๊ะ '+sessionStorage.activeTable);
-			}else{
-				tableNum.html('ไม่ได้เลือกโต๊ะ');
-			}
+		firebaseRef.on('child_added', function(data) {
+			console.log('child add');
+		});
+	};
 
+	var UIUpdateListViewCategory = function(snapshot){
+		var categoryHtml='';
+
+		snapshot.forEach(function(childSnapshot) {
+			var childKey = childSnapshot.key;
+			var childData = childSnapshot.val();
+
+			categoryHtml += '<li><a href="view_menu.html" class="categorylist" data-key="'+ childKey +'">';
+			categoryHtml += '<img src="../'+ childData.category_picture +'"/>' +childData.category_name;
+			categoryHtml += '</a></li> ';
+		}); //for each
+
+		$('#list_view_category').append(categoryHtml);
+		$('#list_view_category').listview('refresh');
+
+		setEventListOnclick();
+	};
+
+	var UIUpdateCategoryName = function(key, status) {
+		$('#' + key).text(status);
+	};
+
+	var setEventListOnclick = function(){
+		$('.categorylist').click(function(){
+				sessionStorage.activeCategory = $(this).attr('data-key');
+				console.log('set active category= '+sessionStorage.activeCategory);
+				$.mobile.changePage( "view_menu.html");
+		}); // click function
+	};
+
+	var checkActiveTable = function(){
+
+		var tableNum = $('.table_num');
+		console.log('active table = '+sessionStorage.activeTable);
+
+		if(sessionStorage.activeTable){
+			tableNum.html('โต๊ะ '+sessionStorage.activeTable);
+		}else{
+			tableNum.html('ไม่ได้เลือกโต๊ะ');
 		}
+	};
 
-		function loadFirebaseData(){
+	return {
+		init: init
+	};
 
-			firebaseRef.once('value', function(snapshot) {
-				UIUpdateListViewCategory(snapshot);
-			});  //firebase once
-
-		}
-
-		function onFirebaseChange(){
-
-			firebaseRef.on('child_changed', function(data) {
-				console.log('child change '+ data.key + ' and ' + data.val().category_name);
-					//$('#'+data.key).text(data.val().category_name);
-					UIUpdateCategoryName(data.key, data.val().category_name);
-			});
-
-			firebaseRef.on('child_added', function(data) {
-				console.log('child add');
-			});
-
-		}
-
-		function UIUpdateCategoryName(key, status){
-			$('#' + key).text(status);
-		}
-
-		function UIUpdateListViewCategory(snapshot){
-
-			var categoryHtml='';
-
-			snapshot.forEach(function(childSnapshot) {
-				var childKey = childSnapshot.key;
-				var childData = childSnapshot.val();
-
-				categoryHtml += '<li><a href="view_menu.html" class="categorylist" data-key="'+ childKey +'">';
-				categoryHtml += '<img src="../'+ childData.category_picture +'"/>' +childData.category_name;
-				categoryHtml += '</a></li> ';
-			}); //for each
-
-			$('#list_view_category').append(categoryHtml);
-			$('#list_view_category').listview('refresh');
-
-			setEventListOnclick();
-		}
-
-		function setEventListOnclick(){
-
-			$('.categorylist').click(function(){
-					sessionStorage.activeCategory = $(this).attr('data-key');
-					/*
-					sessionStorage.activeCategory = {
-						category_id: $(this).attr('data-key'),
-						category_name:
-					};
-					*/
-					console.log('set active category= '+sessionStorage.activeCategory);
-					$.mobile.changePage( "view_menu.html");
-			}); // click function
+})(jQuery);
 
 
-		}
 
+$(document).on("pageinit", "#page-view_category", function(){
+	ViewCategoryModule.init();
 
 		/*
 		$("#btn_summary_category").on("click",function(){
@@ -96,6 +93,4 @@
 		});
 		*/
 
-	});  //pageinit
-
-})(jQuery);
+});  //pageinit

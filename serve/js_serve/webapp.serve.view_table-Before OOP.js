@@ -1,68 +1,77 @@
-var ViewTableModule = (function($) {
+(function($){
 
-	var firebaseRef = firebase.database().ref("DinningTable");
+	$(document).on("pageinit", "#page-view_table", function(){
+	//console.log('firebase timestamp = ' +JSON.stringify(firebase.database.ServerValue.TIMESTAMP));
+	/*
+	var offsetRef = firebase.database().ref(".info/serverTimeOffset");
+	offsetRef.on("value", function(snap) {
+	  var offset = snap.val();
+	  alert(offset);
+	  var estimatedServerTimeMs = new Date().getTime() + offset;
+	  alert(estimatedServerTimeMs);
+	  alert(moment(estimatedServerTimeMs));
+	});
+	*/
 
-	var init = function() {
-	//	bindEvents();
+		var firebaseRef = firebase.database().ref("DinningTable");
+
 		loadFirebaseData();
 		onFirebaseChange();
-	};
 
-	var loadFirebaseData = function(){
-		firebaseRef.once('value', function(snapshot) {
-			UIUpdateListViewTable(snapshot);
-		}); // firebaseRef.once
-	};
+		function loadFirebaseData(){
 
-	var onFirebaseChange = function(){
-		firebaseRef.on('child_changed', function(data) {
-			console.log('child change ja....5555 '+data.key + ' and ' + data.val().table_status);
-			UIUpdateTableStatus(data.key, data.val().table_status);
-		});
-	};
+			firebaseRef.once('value', function(snapshot) {
+				UIUpdateListViewTable(snapshot);
+			}); // firebaseRef.once
 
-	var UIUpdateListViewTable = function(snapshot) {
-		var myHtml='';
+		}
 
-		snapshot.forEach(function(childSnapshot) {
-			var childKey = childSnapshot.key;
-			var childData = childSnapshot.val();
-			//console.log(childKey);
-			//console.log(childData.table_status);
-			myHtml+='<li><a href="#" class="tablelist" data-key="'+ childKey +'">โต๊ะ ' + childKey;
-			myHtml+='<span class="ui-li-count" id="' + childKey  +'" >'+ childData.table_status +'</span>';
-			myHtml+='</a></li>';
-		}); //for each
+		function onFirebaseChange(){
 
-		$('#list_view_table').append(myHtml);
-		$('#list_view_table').listview('refresh');
+			firebaseRef.on('child_changed', function(data) {
+				console.log('child change ja....5555 '+data.key + ' and ' + data.val().table_status);
+				UIUpdateTableStatus(data.key, data.val().table_status);
+			});
 
-		setEventListOnclick();
-	};
+		}
 
-	var setEventListOnclick = function(){
-		$('.tablelist').click(function(){
-				sessionStorage.activeTable = $(this).attr('data-key');
-				//console.log('sessionStorage = '+$(this).attr('data-key'));
-				$.mobile.changePage( "view_category.html");
-		}); // click function
-	};
+		function UIUpdateListViewTable(snapshot) {
 
-	var UIUpdateTableStatus = function(key, status){
-		$('#' + key).text(status);
-	};
+			var childKey;
+			var childData;
+			var myHtml='';
 
-	return {
-		init: init
-	};
-
-})(jQuery);
+			snapshot.forEach(function(childSnapshot) {
+				childKey = childSnapshot.key;
+				childData = childSnapshot.val();
+				//console.log(childKey);
+				//console.log(childData.table_status);
+				myHtml+='<li><a href="#" class="tablelist" data-key="'+ childKey +'">โต๊ะ ' + childKey;
+				myHtml+='<span class="ui-li-count" id="' + childKey  +'" >'+ childData.table_status +'</span>';
+				myHtml+='</a></li>';
+			}); //for each
 
 
+			$('#list_view_table').append(myHtml);
+			$('#list_view_table').listview('refresh');
 
-$(document).on("pageinit", "#page-view_table", function(){
+			setEventListOnclick();
+		}
 
-	ViewTableModule.init();
+		function UIUpdateTableStatus(key, status){
+				$('#' + key).text(status);
+		}
+
+		function setEventListOnclick(){
+
+			$('.tablelist').click(function(){
+					sessionStorage.activeTable = $(this).attr('data-key');
+					//console.log('sessionStorage = '+$(this).attr('data-key'));
+					$.mobile.changePage( "view_category.html");
+			}); // click function
+
+		}
+
 
 }); //page init
 
@@ -166,3 +175,4 @@ $(document).on("pageinit", "#page-view_table", function(){
 
 	}
 */
+})(jQuery);
