@@ -1,27 +1,62 @@
 (function($){
 
-	$(document).on("pageinit", "#page-view_table", function(){
+		$(document).on("pagecreate", "#page-view_table", function(){
+			var app;
+			var firebaseRef = firebase.database().ref("DinningTable");
+			loadFirebaseData();
+			function loadFirebaseData(){
 
-		var app;
+				firebaseRef.once('value', function(snapshot) {
 
-		var firebaseRef = firebase.database().ref("DinningTable");
+					app = new Vue({
+							el: '#vueApp',
+						data: {
+								data_dinning_table: snapshot
+							},
+						mounted: function() {
 
-		loadFirebaseData();
-		onFirebaseChange();
+							console.log('vue ready');
+									this.$nextTick(function() {
+											console.log('nextick..');
+										UIUpdateListViewTable(app.data_dinning_table);
+										//setEventListOnclick();
+										$('.tablelist').click(function(){
+												sessionStorage.activeTable = $(this).attr('data-key');
+												//console.log('sessionStorage = '+$(this).attr('data-key'));
+												$.mobile.changePage( "view_category.html");
+										}); // click function
+									});
+								}
+						});
 
-		function loadFirebaseData(){
+				//	UIUpdateListViewTable(snapshot);
+				}); // firebaseRef.once
 
-			firebaseRef.once('value', function(snapshot) {
-				app = new Vue({
-			  el: '#vueApp',
-			  data: {
-			    	data_dinning_table: snapshot
-			  	}
-				});
-				UIUpdateListViewTable(app.data_dinning_table);
-			}); // firebaseRef.once
+			}
 
-		}
+
+		//});
+
+	//$(document).on("pageinit", "#page-view_table", function(){
+
+
+	//console.log('firebase timestamp = ' +JSON.stringify(firebase.database.ServerValue.TIMESTAMP));
+	/*
+	var offsetRef = firebase.database().ref(".info/serverTimeOffset");
+	offsetRef.on("value", function(snap) {
+	  var offset = snap.val();
+	  alert(offset);
+	  var estimatedServerTimeMs = new Date().getTime() + offset;
+	  alert(estimatedServerTimeMs);
+	  alert(moment(estimatedServerTimeMs));
+	});
+	*/
+
+
+
+		//loadFirebaseData();
+	//	onFirebaseChange();
+
 
 		function onFirebaseChange(){
 
@@ -47,11 +82,9 @@
 				myHtml+='<span class="ui-li-count" id="' + childKey  +'" >'+ childData.table_status +'</span>';
 				myHtml+='</a></li>';
 			}); //for each
-			console.log('myHtml = '+myHtml);
+
 
 			$('#list_view_table').append(myHtml);
-			//$('#list_view_table').listview('refresh');
-			// ar fix for vue.js
 			$('#list_view_table').listview().listview('refresh');
 
 			setEventListOnclick();
@@ -62,14 +95,9 @@
 		}
 
 		function setEventListOnclick(){
-			console.log('function setEventListOnclick...');
-
+			console.log('setevnelist onclick..');
 
 			$('.tablelist').click(function(){
-					console.log('click list...');
-					
-						app.data_dinning_table="dddd";
-						$('#list_view_table').listview('refresh');
 					sessionStorage.activeTable = $(this).attr('data-key');
 					//console.log('sessionStorage = '+$(this).attr('data-key'));
 					$.mobile.changePage( "view_category.html");
