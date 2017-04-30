@@ -199,7 +199,12 @@ var ModuleViewMenu = (function($) {
 				//$.mobile.changePage( "view_summary.html");
 			}else {
 				//ไม่มีการเปลี่ยนแปลงออร์เดอร์ ให้เปลี่ยน page ได้เลย
-				$.mobile.changePage("view_summary.html");
+				//$.mobile.changePage("view_summary.html");
+
+
+				$.mobile.changePage("view_summary.html", {
+					changeHash: false
+				});
 			}
 
 		}); //btn_summary_menu

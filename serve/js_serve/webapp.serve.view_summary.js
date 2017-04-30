@@ -151,11 +151,15 @@ var ViewSummaryModule = (function($) {
 			}else {
 				back_to_page = "view_category.html";
 			}
-
+			console.log('back to page = '+back_to_page);
 			$.mobile.changePage(back_to_page, {
-				changeHash: false,
+			//$.mobile.changePage("view_menu.html", {
+				changeHash: false
+				//changeHash: true,
+				/*
 				data: { cat_id: header_table_num.attr("data-cat_id"),
 						 table_number: header_table_num.text() }
+						 */
 			});
 
 		});
