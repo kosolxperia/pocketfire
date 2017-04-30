@@ -10,7 +10,7 @@ var ModuleViewMenu = (function($) {
 
 
 	var init = function() {
-		console.log('viewmenu init...');
+		console.log('viewmenu init...****');
 		active_category = sessionStorage.activeCategory;
 		firebaseRefMenu = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
 		firebaseRef2 = firebase.database().ref("Category").orderByKey().equalTo(String(active_category));

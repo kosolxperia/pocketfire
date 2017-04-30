@@ -1,5 +1,5 @@
-console.log('in DatabaseDinningModule...');
-var DatabaseDinningModule = (function($) {
+console.log('in DatabaseMenu...');
+var DatabaseMenuModule = (function($) {
 
     var firebaseRef = firebase.database().ref("DinningTable");
 
@@ -23,7 +23,7 @@ var DatabaseDinningModule = (function($) {
         // child change not return Prmomise !!!!
         firebaseRef.on('child_changed', function(data) {
             console.log('child change dinningtable...= '+JSON.stringify(data));
-            fn(data);
+            fn(data.key, data.val().table_status);
 
 		});
 

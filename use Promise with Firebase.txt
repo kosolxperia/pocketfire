@@ -1,0 +1,9 @@
+https://firebase.googleblog.com/2016/01/keeping-our-promises-and-callbacks_76.html
+
+
+// Fetch a Blog Post by ID. Returns a Promise of an actual object, not a DataSnapshot.
+function getArticlePromise(id) {
+  return ref.child('blogposts').child(id).once('value').then(function(snapshot) {
+    return snapshot.val();
+  });
+}

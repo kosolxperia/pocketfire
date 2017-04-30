@@ -1,6 +1,6 @@
 var ViewCategoryModule = (function($) {
 
-	var firebaseRef = firebase.database().ref("Category");
+	//var firebaseRef = firebase.database().ref("Category");
 
 	var init = function() {
 		console.log('init')
@@ -11,21 +11,31 @@ var ViewCategoryModule = (function($) {
 	};
 
 	var loadFirebaseData = function(){
+		DatabaseCategoryModule.get_data_category()
+		.then(function(snapshot){
+			UIUpdateListViewCategory(snapshot);
+		});
+		/*
 		firebaseRef.once('value', function(snapshot) {
 			UIUpdateListViewCategory(snapshot);
 		});  //firebase once
+		*/
 	};
 
 	var onFirebaseChange = function(){
+		DatabaseCategoryModule.run_fn_on_change(UIUpdateCategoryName);
+		/*
 		firebaseRef.on('child_changed', function(data) {
 			console.log('child change '+ data.key + ' and ' + data.val().category_name);
 				//$('#'+data.key).text(data.val().category_name);
 				UIUpdateCategoryName(data.key, data.val().category_name);
 		});
 
+
 		firebaseRef.on('child_added', function(data) {
 			console.log('child add');
 		});
+		*/
 	};
 
 	var UIUpdateListViewCategory = function(snapshot){
@@ -36,7 +46,8 @@ var ViewCategoryModule = (function($) {
 			var childData = childSnapshot.val();
 
 			categoryHtml += '<li><a href="view_menu.html" class="categorylist" data-key="'+ childKey +'">';
-			categoryHtml += '<img src="../'+ childData.category_picture +'"/>' +childData.category_name;
+			//categoryHtml += '<li><a href="view_menu.html" class="categorylist" id="'+ childKey +'" data-key="'+ childKey +'">';
+			categoryHtml += '<img src="../'+ childData.category_picture +'"/>' +'<span id="'+ childKey +'">'+childData.category_name+'</span>';
 			categoryHtml += '</a></li> ';
 		}); //for each
 
@@ -46,8 +57,11 @@ var ViewCategoryModule = (function($) {
 		setEventListOnclick();
 	};
 
-	var UIUpdateCategoryName = function(key, status) {
-		$('#' + key).text(status);
+	//var UIUpdateCategoryName = function(key, status) {
+	var UIUpdateCategoryName = function(data) {
+		console.log('fn UIUpdateCategoryName... '+data.key);
+		//console.log(JSON.stringify($('#' + data.key)));
+		$('#' + data.key).text(data.val().category_name);
 	};
 
 	var setEventListOnclick = function(){

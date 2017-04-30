@@ -1,7 +1,5 @@
 var ViewTableModule = (function($) {
 
-	var firebaseRef = firebase.database().ref("DinningTable");
-
 	var init = function() {
 	//	bindEvents();
 		loadFirebaseData();
@@ -9,16 +7,17 @@ var ViewTableModule = (function($) {
 	};
 
 	var loadFirebaseData = function(){
-		firebaseRef.once('value', function(snapshot) {
-			UIUpdateListViewTable(snapshot);
-		}); // firebaseRef.once
+
+		DatabaseDinningModule.get_data_dinning_table()
+		.then(function(data){
+			console.log('data = '+JSON.stringify(data));
+			UIUpdateListViewTable(data);
+		});
+
 	};
 
 	var onFirebaseChange = function(){
-		firebaseRef.on('child_changed', function(data) {
-			console.log('child change ja....5555 '+data.key + ' and ' + data.val().table_status);
-			UIUpdateTableStatus(data.key, data.val().table_status);
-		});
+		DatabaseDinningModule.run_fn_on_change(UIUpdateTableStatus);
 	};
 
 	var UIUpdateListViewTable = function(snapshot) {
@@ -48,8 +47,10 @@ var ViewTableModule = (function($) {
 		}); // click function
 	};
 
-	var UIUpdateTableStatus = function(key, status){
-		$('#' + key).text(status);
+	var UIUpdateTableStatus = function(data){
+		console.log('on child change dinning table..');
+		$('#' + data.key).text(data.val().table_status);
+		
 	};
 
 	return {
