@@ -43,19 +43,22 @@ var ModuleViewMenu = (function($) {
 
 	var loadFirebaseData = function() {
 
-		DatabaseMenuModule.get_data_menu_byId(active_category)
+		var today;
+		DatabaseTemp_OrdersModule.get_data_Temp_Orders_byTable(sessionStorage.activeTable)
 		.then(function(snapshot){
-			UIUpdateListViewMenu(snapshot);
-		}).then(function(){
-				DatabaseTemp_OrdersModule.get_data_Temp_Orders_byTable(sessionStorage.activeTable)
-				.then(function(snapshot){
 
-					var today =DatabaseTemp_OrdersModule.filter_today_orders(snapshot);
-					console.log('today return = '+JSON.stringify(today));
-					checkPendingOrder(today);
+			today =DatabaseTemp_OrdersModule.filter_today_orders(snapshot);
+			console.log('today return = '+JSON.stringify(today));
+		//	checkPendingOrder(today);
 
-					//checkPendingOrder(snapshot);
-				});
+			//checkPendingOrder(snapshot);
+		})
+		.then(function(){
+			DatabaseMenuModule.get_data_menu_byId(active_category)
+			.then(function(snapshot){
+				UIUpdateListViewMenu(snapshot);
+				checkPendingOrder(today);
+			});
 		});
 
 		DatabaseCategoryModule.get_data_category_byId(active_category)
