@@ -91,7 +91,7 @@ var DatabaseTemp_OrdersModule = (function($) {
           }
 
         console.log('**** call UIUpdatePendingOrders from event child ADD ****');
-        newData[data.key] = data;
+        newData[data.key] = data.val();
         console.log('data = '+JSON.stringify(newData));
         fn(newData);
       }
