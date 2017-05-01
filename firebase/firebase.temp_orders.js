@@ -7,42 +7,39 @@ var DatabaseTemp_OrdersModule = (function($) {
 
 	};
 
-  var get_data_Temp_Orders_byTable = function(activeTable){
-    var firebaseRefTemp_Orders2 = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(activeTable));
+    var get_data_Temp_Orders_byTable = function(activeTable){
+        var firebaseRefTemp_Orders2 = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(activeTable));
 
-    return firebaseRefTemp_Orders2.once('value', function(snapshot) {
+        return firebaseRefTemp_Orders2.once('value', function(snapshot) {
 
-     });
-  };
+         });
+     };
 
-  var filter_today_orders = function(snapshot){
-    var now = moment();
-    var diffDays;
-    var todayOrders = {};
-    snapshot.forEach(function(childSnapshot) {
+    var filter_today_orders = function(snapshot){
+        var now = moment();
+        var diffDays;
+        var todayOrders = {};
+        snapshot.forEach(function(childSnapshot) {
 
-      console.log('found pending order');
+        console.log('found pending order');
 
-      var childData = childSnapshot.val();
+        var childData = childSnapshot.val();
 
-      var keys = Object.keys(childData.order);
-      console.log('obj contains ' + keys.length + ' keys: '+  keys);
+        var keys = Object.keys(childData.order);
+        console.log('obj contains ' + keys.length + ' keys: '+  keys);
 
-      for (var i = 0; i < keys.length; i++) {
-          var order_time=childData.time;
-          order_time=order_time.substr(0,order_time.indexOf(' '));
+        for (var i = 0; i < keys.length; i++) {
+            var order_time=childData.time;
+            order_time=order_time.substr(0,order_time.indexOf(' '));
 
-        if (now.diff(order_time, 'days') > 0) {
-          console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
-          continue;
-        }
+            if (now.diff(order_time, 'days') > 0) {
+                console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
+                continue;
+            }
 
         var keyname = keys[i];
 
-        //console.log('foun today order '+JSON.stringify(childData));
-        //console.log('key is ' + childSnapshot.key);
-        todayOrders[childSnapshot.key]=childData;
-        //console.log('after extend todayOrders = '+JSON.stringify(todayOrders));
+        todayOrders[childSnapshot.key] = childData;
 
       } // for loop
 
@@ -60,10 +57,15 @@ var DatabaseTemp_OrdersModule = (function($) {
 
 	};
 
+    var update_orders = function(data){
+
+    };
+
 	return {
         run_fn_on_change: run_fn_on_change,
         get_data_Temp_Orders_byTable: get_data_Temp_Orders_byTable,
-        filter_today_orders: filter_today_orders
+        filter_today_orders: filter_today_orders,
+        update_orders: update_orders
 	};
 
 })(jQuery);

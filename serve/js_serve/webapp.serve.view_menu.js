@@ -226,14 +226,11 @@ var ModuleViewMenu = (function($) {
 
 		var have_data_from_firebase = false;
 
-		//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
 		console.log('sendOrder....');
 		var firebaseRefUpdateTemp_Orders;
 		var childkey; // for old order
 		var jsonOrder = {};
 
-	//	var d = new Date();
-	//	var current_time = d.getFullYear()+"-"+ d.getMonth()+"-"+d.getDate()+" "+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
 		var current_time = moment().format('YYYY-MM-DD HH:mm:ss');
 
 		jsonOrder.table_number = sessionStorage.activeTable;
@@ -251,20 +248,16 @@ var ModuleViewMenu = (function($) {
 		var firebaseRefNewOrders=firebase.database().ref("Temp_Orders").push();
 
 		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
-		//$("#list_view_menu .ui-li-count").each(function(index){
 
 			menuId = $(this).attr("data-menu_id");
 			quan = $(this).text();
 
 			if($(this).attr("data-childkey")){
-			//if($(this).attr("data-childkey") && $(this).attr("data-update_item")){
 
 				// exits in Temp_Orders
 				have_data_from_firebase  = true;
 				console.log('found old order.......');
 				childkey = $(this).attr("data-childkey");
-				//menuId = $(this).attr("data-menu_id");
-				//newQuan = $(this).text();
 				firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order/"+menuId);
 
 				if(quan != "0"){
@@ -281,15 +274,13 @@ var ModuleViewMenu = (function($) {
 							status: 'cancel',
 							edit_time: current_time
 					});
-					//firebaseRefUpdateTemp_Orders.remove();
+
 				}
-			//firebase.database().ref("Temp_Orders/"+childkey+"/order/M3").remove();
 
 			}
-			//ar fix 18-4-60  19.35
-			//else if(!$(this).attr("data-childkey") && $(this).attr("data-update_item")){
+
 			else {
-			//else{
+
 				$(this).attr("data-childkey", firebaseRefNewOrders.key);
 
 				jsonOrder.order[menuId]= {
