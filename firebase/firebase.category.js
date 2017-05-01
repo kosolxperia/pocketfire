@@ -32,7 +32,6 @@ var DatabaseCategoryModule = (function($) {
         // child change not return Prmomise !!!!
         firebaseRef.on('child_changed', function(data) {
             console.log('child change category...= '+JSON.stringify(data));
-            //fn(data.key, data.val().category_name);
             fn(data);``
 		});
 

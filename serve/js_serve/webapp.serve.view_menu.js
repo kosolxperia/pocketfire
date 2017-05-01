@@ -4,7 +4,7 @@ var ModuleViewMenu = (function($) {
 	//var firebaseRef2;
 	var change_quantity = false;
 	//var firebaseRefMenu;
-	var firebaseRefTemp_Orders;
+	//var firebaseRefTemp_Orders;
 	var active_category;
 	var tableNum;
 
@@ -17,7 +17,7 @@ var ModuleViewMenu = (function($) {
 
 		checkActiveTable();
 		loadFirebaseData();
-		onFirebaseChange();
+		//onFirebaseChange();
 		setEventBtnSummaryMenu();
 		onPageHide();
 	};
@@ -46,6 +46,11 @@ var ModuleViewMenu = (function($) {
 		DatabaseMenuModule.get_data_menu_byId(active_category)
 		.then(function(snapshot){
 			UIUpdateListViewMenu(snapshot);
+		}).then(function(){
+				DatabaseTemp_OrdersModule.get_data_Temp_Orders_byTable(sessionStorage.activeTable)
+				.then(function(snapshot){
+					checkPendingOrder(snapshot);
+				});
 		});
 
 		DatabaseCategoryModule.get_data_category_byId(active_category)
@@ -53,20 +58,14 @@ var ModuleViewMenu = (function($) {
 			showCategoryName(snapshot);
 		});
 
-		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+
+		//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
 
 	};
 
 	var onFirebaseChange = function() {
 		console.log('function onFirebaseChange....');
 		DatabaseMenuModule.run_fn_on_change(UIUpdateMenu);
-		/*
-		firebaseRefMenu.on('child_changed', function(data) {
-			console.log('child change '+ data.key + ' and ' + data.val().category_name);
-				//$('#'+data.key).text(data.val().category_name);
-				UIUpdateMenu(data.key, data.val());
-		});
-*/
 
 		//Temp_Orders
 		firebaseRefTemp_Orders.on('child_changed', function(data) {
@@ -78,8 +77,7 @@ var ModuleViewMenu = (function($) {
 			//console.log('key.length = '+keys.length);
 			for (var i = 0; i < keys.length; i++) {
 					var keyname = keys[i];
-				//console.log(childData.order[i].menu_id + ' and ' + childData.order[i].quantity );
-				UIUpdateQuantity(keyname, childData.order[keyname].quantity);
+					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
 			}
 		});
 
@@ -152,7 +150,7 @@ var ModuleViewMenu = (function($) {
 
 			setEventListMenu();
 			//add delay for loadcomplete then check pending order
-			checkPendingOrder();
+			//checkPendingOrder();
 	};
 
 	var setEventListMenu = function() {
@@ -215,13 +213,13 @@ var ModuleViewMenu = (function($) {
 		$('#'+menu_id+'quan').text(quantity);
 	};
 
-	var checkPendingOrder = function() {
+	var checkPendingOrder = function(snapshot) {
 		console.log('check pending order....');
 		var now = moment();
 		var diffDays;
 
-		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-		firebaseRefTemp_Orders.once('value', function(snapshot) {
+		//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
+		//firebaseRefTemp_Orders.once('value', function(snapshot) {
 			console.log('snapshot = ' +JSON.stringify(snapshot));
 
 			snapshot.forEach(function(childSnapshot) {
@@ -256,7 +254,7 @@ var ModuleViewMenu = (function($) {
 				} // for loop
 
 			}); //for each
-		});  //firebase once
+		//});  //firebase once
 	};
 
 	var sendOrder = function() {
