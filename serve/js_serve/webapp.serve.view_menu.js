@@ -64,40 +64,10 @@ var ModuleViewMenu = (function($) {
 
 		//Temp_Orders
 		DatabaseTemp_OrdersModule.run_fn_on_change(UIUpdateQuantity);
-
+		DatabaseTemp_OrdersModule.run_fn_on_add(UIUpdatePendingOrders);
 		return false;
 
-		//ar fix
-		//http://stackoverflow.com/questions/11788902/firebase-child-added-only-get-child-added
-		firebaseRefTemp_Orders.on('child_added', function(data) {
-			var now = moment();
-			var diffDays;
-			var childData = data.val();
-			//console.log('child ADD childData = '+JSON.stringify(childData));
-			console.log('child ADD');
 
-			var keys = Object.keys(childData.order);
-			for (var i = 0; i < keys.length; i++) {
-					var keyname = keys[i];
-					var order_time=childData.time;
-				//	order_time=order_time.substr(0,order_time.indexOf(' '));
-				var firebasetime=moment(childData.firebase_timestamp);
-				var diff = moment().diff(firebasetime, 'seconds');
-				console.log('diff in child Add = '+diff);
-
-					//if (now.diff(order_time, 'days') > 0) {
-					if(parseInt(diff) > 5){
-					console.log('found very old order > 5 seconds = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
-					continue;
-
-					}
-
-				console.log('**** call UIUpdateQuantity from event child ADD ****');
-
-				UIUpdateQuantity(keyname, childData.order[keyname].quantity);
-			}
-
-		});
 
 		firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
 		  console.log('child REMOVED = '+ console.log(JSON.stringify(oldChildSnapshot)));
@@ -205,6 +175,7 @@ var ModuleViewMenu = (function($) {
 	};
 
 	var UIUpdatePendingOrders = function(childData) {
+		console.log('data from UIUpdatePendingOrders = '+JSON.stringify(childData));
 
 		var parentkeys = Object.keys(childData);
 			console.log('obj contains ' + parentkeys.length + ' keys: '+  parentkeys);
@@ -212,6 +183,7 @@ var ModuleViewMenu = (function($) {
 			for (var i = 0; i < parentkeys.length; i++) {
 
 				var order_time=childData[parentkeys[i]].time;
+				console.log('order_time = '+order_time);
 				var orderKeys = Object.keys(childData[parentkeys[i]].order);
 
 					for (var i2 = 0; i2 < orderKeys.length; i2++) {

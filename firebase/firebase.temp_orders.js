@@ -56,7 +56,7 @@ var DatabaseTemp_OrdersModule = (function($) {
         console.log('fn Temp_Orders change...');
         firebaseRefTemp_Orders.on('child_changed', function(data) {
             console.log('child change Temp_Orders...= '+JSON.stringify(data));
-            if(data.order){
+            if(data.val().order){
                 // not remove ALL order
                 fn(data.val());
             }
@@ -64,6 +64,40 @@ var DatabaseTemp_OrdersModule = (function($) {
 		});
 
 	};
+
+  var run_fn_on_add = function(fn){
+    firebaseRefTemp_Orders.on('child_added', function(data) {
+      var now = moment();
+      var diffDays;
+      var childData = data.val();
+      var newData = {};
+      //console.log('child ADD childData = '+JSON.stringify(childData));
+      console.log('child ADD');
+
+      var keys = Object.keys(childData.order);
+      for (var i = 0; i < keys.length; i++) {
+          var keyname = keys[i];
+          var order_time=childData.time;
+        //	order_time=order_time.substr(0,order_time.indexOf(' '));
+        var firebasetime=moment(childData.firebase_timestamp);
+        var diff = moment().diff(firebasetime, 'seconds');
+        console.log('diff in child Add = '+diff);
+
+          //if (now.diff(order_time, 'days') > 0) {
+          if(parseInt(diff) > 5){
+          console.log('found very old order > 5 seconds = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
+          continue;
+
+          }
+
+        console.log('**** call UIUpdatePendingOrders from event child ADD ****');
+        newData[data.key] = data;
+        console.log('data = '+JSON.stringify(newData));
+        fn(newData);
+      }
+
+    });
+  };
 
     var update_orders = function(data){
         var firebaseUpdate = firebase.database().ref("Temp_Orders/"+ data.key +"/order/"+ data.menu_id);
@@ -103,7 +137,8 @@ var DatabaseTemp_OrdersModule = (function($) {
         update_orders: update_orders,
         get_new_orders_id: get_new_orders_id,
         set_new_orders: set_new_orders,
-        remove_orders: remove_orders
+        remove_orders: remove_orders,
+        run_fn_on_add: run_fn_on_add
 
 	};
 
