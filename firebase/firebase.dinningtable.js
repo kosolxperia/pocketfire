@@ -9,14 +9,8 @@ var DatabaseDinningModule = (function($) {
 
 	var get_data_dinning_table = function(){
 
-        firebaseRef = firebase.database().ref("DinningTable");
-
-        return firebaseRef.once('value', function(snapshot) {
-
-         });
-
+        return firebaseRef.once('value', function(snapshot) {});
          // .once Always RETURN Promise!!!!
-
 	};
 
 	var run_fn_on_change = function(fn){

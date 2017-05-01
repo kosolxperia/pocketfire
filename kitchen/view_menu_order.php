@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once "../include/common.php";
 require_once "../include/connect_db.php";
 ?>
@@ -10,11 +10,11 @@ require_once "../include/connect_db.php";
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 	<link rel="stylesheet" href="../css/jquery.ui-1.8.23.custom.css" />
-	<link rel="stylesheet" href="../css/jquery.mobile-1.3.0.min.css" />
+	<link rel="stylesheet" href="../css/jquery.mobile-1.4.5.min.css" />
 
-	<script src="../js/jquery-1.8.2.min.js"></script>
+	<script src="../js/jquery-1.12.4.min.js"></script>
 	<script src="../js/jquery-ui-1.8.23.custom.min.js"></script>
-	<script src="../js/jquery.mobile-1.3.0.min.js"></script>
+	<script src="../js/jquery.mobile-1.4.5.min.js"></script>
 	<script src="js_kitchen/webapp.kitchen.view_menu_order.js"></script>
 
 </head>
@@ -27,11 +27,11 @@ require_once "../include/connect_db.php";
 
 		</div>
 
-		<div data-role="content">			 
+		<div data-role="content">
 
 			<ul data-role="listview" id="list_view_menu_order" data-inset="true">
 
-				<?php			
+				<?php
 			$sql = "select table_number, temp_id, Temp_Orders.menu_id, menu_name, quantity ";
 
 			$sql .= "from Temp_Orders join Menu on Temp_Orders.menu_id=Menu.menu_id ";
@@ -43,17 +43,17 @@ require_once "../include/connect_db.php";
 
 			while($row = mysql_fetch_array($res)){
 				?>
-				<li data-icon="false">					
+				<li data-icon="false">
 
-					<a href="#" > 					
+					<a href="#" >
 						<h1><?=$row['menu_name']?></h1>
-						<p>โต๊ะ: <?=$row['table_number']?></p>		
+						<p>โต๊ะ: <?=$row['table_number']?></p>
 						<span class="ui-li-count"><?=$row['quantity']?></span>
 					</a>
 					<a data-icon="delete" href="#" data-temp_id="<?=$row['temp_id']?>" class="btn_delete_order_menu">ลบ</a>
 				</li>
 
-				<?php				
+				<?php
 
 		}  //while
 
@@ -61,7 +61,7 @@ require_once "../include/connect_db.php";
 
 	</ul>
 
-</div>				
+</div>
 
 </div>
 
