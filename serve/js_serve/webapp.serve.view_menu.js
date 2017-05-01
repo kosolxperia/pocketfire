@@ -284,7 +284,7 @@ var ModuleViewMenu = (function($) {
 						status: 'cancel',
 						edit_time: current_time
 					};
-					DatabaseTemp_OrdersModule.update_order(data_update);
+					DatabaseTemp_OrdersModule.update_orders(data_update);
 
 				}
 

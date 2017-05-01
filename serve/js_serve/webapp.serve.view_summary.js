@@ -104,10 +104,9 @@ var ViewSummaryModule = (function($) {
 		var menuId;
 		var parentKey;
 		var quan;
-		var firebaseRefUpdateTemp_Orders;
-		//var d = new Date();
-		//	var current_time = d.getFullYear()+"-"+ d.getMonth()+"-"+d.getDate()+" "+ d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+		//var firebaseRefUpdateTemp_Orders;
 		var current_time = moment().format('YYYY-MM-DD HH:mm:ss');
+		var data_update;
 
 		$("#list_summary .ui-li-count[data-update_item]").each(function(index){
 
@@ -115,22 +114,34 @@ var ViewSummaryModule = (function($) {
 			parentKey= $(this).attr("data-parentkey");
 			quan = $(this).text();
 
-			firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+parentKey+"/order/"+menuId);
-
 			if(quan != "0"){
-
-				firebaseRefUpdateTemp_Orders.set({
-						quantity: quan,
-						status: 'order',
-						edit_time: current_time
-				});
+				data_update = {
+					key: parentKey,
+					menu_id: menuId,
+					quantity: quan,
+					status: 'order',
+					edit_time: current_time
+				};
+				DatabaseTemp_OrdersModule.update_orders(data_update);
 
 			} else {
+
+				data_update = {
+					key: parentKey,
+					menu_id: menuId
+				//	quantity: quan,
+					//status: 'cancel',
+					//edit_time: current_time
+				};
+				//DatabaseTemp_OrdersModule.update_orders(data_update);
+				DatabaseTemp_OrdersModule.remove_orders(data_update);
+				/*
 				firebaseRefUpdateTemp_Orders.set({
 						quantity: quan,
 						status: 'cancel',
 						edit_time: current_time
 				});
+				*/
 				//firebaseRefUpdateTemp_Orders.remove();
 			}
 
@@ -144,6 +155,7 @@ var ViewSummaryModule = (function($) {
 
 			if(change_quantity === true){
 				updateOrder();
+				change_quantity = false;
 			}
 
 			if(header_table_num.attr("data-cat_id")){
@@ -151,15 +163,10 @@ var ViewSummaryModule = (function($) {
 			}else {
 				back_to_page = "view_category.html";
 			}
-			console.log('back to page = '+back_to_page);
+
+			console.log('back to page = ' + back_to_page);
 			$.mobile.changePage(back_to_page, {
-			//$.mobile.changePage("view_menu.html", {
 				changeHash: false
-				//changeHash: true,
-				/*
-				data: { cat_id: header_table_num.attr("data-cat_id"),
-						 table_number: header_table_num.text() }
-						 */
 			});
 
 		});
@@ -168,6 +175,7 @@ var ViewSummaryModule = (function($) {
 
 			if(change_quantity === true){
 				updateOrder();
+				change_quantity = false;
 			}
 
 			return false;

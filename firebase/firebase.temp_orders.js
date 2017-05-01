@@ -66,6 +66,10 @@ var DatabaseTemp_OrdersModule = (function($) {
         });
     };
 
+    var remove_orders = function(data){
+        firebase.database().ref("Temp_Orders/"+ data.key +"/order/"+ data.menu_id).remove();
+    };
+
     var get_new_orders_id = function(){
 
         return firebase.database().ref("Temp_Orders").push();
@@ -83,7 +87,8 @@ var DatabaseTemp_OrdersModule = (function($) {
         filter_today_orders: filter_today_orders,
         update_orders: update_orders,
         get_new_orders_id: get_new_orders_id,
-        set_new_orders: set_new_orders
+        set_new_orders: set_new_orders,
+        remove_orders: remove_orders
 
 	};
 
