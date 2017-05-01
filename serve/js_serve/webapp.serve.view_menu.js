@@ -63,9 +63,10 @@ var ModuleViewMenu = (function($) {
 		DatabaseMenuModule.run_fn_on_change(UIUpdateMenu);
 
 		//Temp_Orders
+		DatabaseTemp_OrdersModule.set_active_table(sessionStorage.activeTable);
 		DatabaseTemp_OrdersModule.run_fn_on_change(UIUpdateQuantity);
 		DatabaseTemp_OrdersModule.run_fn_on_add(UIUpdatePendingOrders);
-		//DatabaseTemp_OrdersModule.run_fn_on_remove()
+		DatabaseTemp_OrdersModule.run_fn_on_remove(UIUpdateQuantity)
 		return false;
 
 
@@ -226,7 +227,7 @@ var ModuleViewMenu = (function($) {
 		var firebaseRefNewOrders = DatabaseTemp_OrdersModule.get_new_orders_id();
 
 		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
-
+			// ห้ามกันการอัพเดท firebase ในฟังก์ชั่น each เพราะมันจะหลุดจาก context ทำให้ข้อมูลผิดพลาด
 			menuId = $(this).attr("data-menu_id");
 			quan = $(this).text();
 
@@ -238,24 +239,29 @@ var ModuleViewMenu = (function($) {
 				childkey = $(this).attr("data-childkey");
 
 				if(quan != "0"){
-					data_update = {
+					//data_update = {
+					update_order[menuId]={
 						key: childkey,
 						menu_id: menuId,
 						quantity: quan,
 						status: 'pending',
 						edit_time: current_time
 					};
-
-					DatabaseTemp_OrdersModule.update_orders(data_update);
+					console.log('update_orders = '+JSON.stringify(update_order[menuId]));
+					//DatabaseTemp_OrdersModule.update_orders(data_update);
 
 				} else {
-
-					data_update = {
+					//data_update = {
+					update_order[menuId]={
 						key: childkey,
-						menu_id: menuId
+						menu_id: menuId,
+						quantity: quan,
+						status: 'cancel',
+						edit_time: current_time
 					};
 
-					DatabaseTemp_OrdersModule.remove_orders(data_update);
+					//DatabaseTemp_OrdersModule.update_orders(data_update);
+					// out of context jQuery !!!!!!
 
 				}
 
@@ -273,6 +279,8 @@ var ModuleViewMenu = (function($) {
 
 		});  // list view menu each ******
 		console.log('JSON ORDER = '+JSON.stringify(jsonOrder));
+
+		DatabaseTemp_OrdersModule.update_orders(update_order);
 
 		// save new order
 		var keys = Object.keys(jsonOrder.order);

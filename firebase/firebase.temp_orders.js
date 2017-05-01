@@ -2,10 +2,14 @@ console.log('in Temp_Orders category...');
 var DatabaseTemp_OrdersModule = (function($) {
 
     var firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders");
-
+    var active_table;
 	var init = function() {
 
 	};
+
+  var set_active_table = function(activeTable){
+    active_table = activeTable;
+  };
 
     var get_data_Temp_Orders_byTable = function(activeTable){
         var firebaseRefTemp_Orders2 = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(activeTable));
@@ -54,7 +58,9 @@ var DatabaseTemp_OrdersModule = (function($) {
 
 	var run_fn_on_change = function(fn){
         console.log('fn Temp_Orders change...');
-        firebaseRefTemp_Orders.on('child_changed', function(data) {
+      //  firebaseRefTemp_Orders.on('child_changed', function(data) {
+      firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(active_table))
+      .on('child_changed', function(data){
             console.log('child change Temp_Orders...= '+JSON.stringify(data));
             if(data.val().order){
                 // not remove ALL order
@@ -67,12 +73,16 @@ var DatabaseTemp_OrdersModule = (function($) {
 
   var run_fn_on_remove = function(fn){
     firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
-      console.log('child REMOVED = '+ console.log(JSON.stringify(oldChildSnapshot)));
+      console.log('child REMOVED = '+ JSON.stringify(oldChildSnapshot));
+      console.log('key = '+oldChildSnapshot.key);
+      //fn(oldChildSnapshot.val());
     });
   };
 
   var run_fn_on_add = function(fn){
-    firebaseRefTemp_Orders.on('child_added', function(data) {
+    //firebaseRefTemp_Orders.on('child_added', function(data) {
+    firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(active_table))
+    .on('child_added', function(data){
       var now = moment();
       var diffDays;
       var childData = data.val();
@@ -106,12 +116,19 @@ var DatabaseTemp_OrdersModule = (function($) {
   };
 
     var update_orders = function(data){
-        var firebaseUpdate = firebase.database().ref("Temp_Orders/"+ data.key +"/order/"+ data.menu_id);
-        firebaseUpdate.set({
-            quantity: data.quantity,
-            status: data.status,
-            edit_time: data.edit_time
-        });
+      console.log('data = '+JSON.stringify(data));
+      var keys = Object.keys(data);
+      for (var i = 0; i < keys.length; i++) {
+          var keyname = keys[i];
+          firebase.database().ref("Temp_Orders/"+ data[keyname].key +"/order/"+ keyname)
+          .set({
+              quantity: data[keyname].quantity,
+              status: data[keyname].status,
+              edit_time: data[keyname].edit_time
+          });
+
+      }
+    
     };
 
     var remove_orders = function(data){
@@ -144,7 +161,9 @@ var DatabaseTemp_OrdersModule = (function($) {
         get_new_orders_id: get_new_orders_id,
         set_new_orders: set_new_orders,
         remove_orders: remove_orders,
-        run_fn_on_add: run_fn_on_add
+        run_fn_on_add: run_fn_on_add,
+        run_fn_on_remove: run_fn_on_remove,
+        set_active_table: set_active_table
 
 	};
 
