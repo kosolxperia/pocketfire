@@ -49,7 +49,12 @@ var ModuleViewMenu = (function($) {
 		}).then(function(){
 				DatabaseTemp_OrdersModule.get_data_Temp_Orders_byTable(sessionStorage.activeTable)
 				.then(function(snapshot){
-					checkPendingOrder(snapshot);
+
+					var today =DatabaseTemp_OrdersModule.filter_today_orders(snapshot);
+					console.log('today return = '+JSON.stringify(today));
+					checkPendingOrder(today);
+
+					//checkPendingOrder(snapshot);
 				});
 		});
 
@@ -209,52 +214,41 @@ var ModuleViewMenu = (function($) {
 	};
 
 	var UIUpdateQuantity = function(menu_id, quantity) {
-		console.log('fn UIUpdateQuantity....');
+		console.log('fn UIUpdateQuantity.... quantitiy = '+quantity + ' menu_id ='+menu_id);
 		$('#'+menu_id+'quan').text(quantity);
 	};
 
-	var checkPendingOrder = function(snapshot) {
-		console.log('check pending order....');
-		var now = moment();
-		var diffDays;
+	var checkPendingOrder = function(childData) {
 
-		//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-		//firebaseRefTemp_Orders.once('value', function(snapshot) {
-			console.log('snapshot = ' +JSON.stringify(snapshot));
+				//var keys = Object.keys(childData.order);
+				var parentkeys = Object.keys(childData);
+				console.log('obj contains ' + parentkeys.length + ' keys: '+  parentkeys);
 
-			snapshot.forEach(function(childSnapshot) {
+				//return false;
 
-				console.log('found pending order');
+				for (var i = 0; i < parentkeys.length; i++) {
 
-				var childData = childSnapshot.val();
-				console.log('test = ' +JSON.stringify(childData));
-				console.log('AAAAA order menuid ='+childData.table_number);
+						var order_time=childData[parentkeys[i]].time;
+						console.log('order_time = '+order_time);
+						//continue;
+
+						var orderKeys = Object.keys(childData[parentkeys[i]].order);
+
+						for (var i2 = 0; i2 < orderKeys.length; i2++) {
+							console.log('ordekey = '+orderKeys[i2]);
+							UIUpdateQuantity(orderKeys[i2], childData[parentkeys[i]].order[orderKeys[i2]].quantity);
+							//console.log('key is ' + childSnapshot.key);
+							$('#'+orderKeys[i2]+"quan").attr('data-childkey',parentkeys[i]);
+						} // for loop order key
+					//var keyname = parentkeys[i];
 
 
-				var keys = Object.keys(childData.order);
-				console.log('obj contains ' + keys.length + ' keys: '+  keys);
-
-				for (var i = 0; i < keys.length; i++) {
-						var order_time=childData.time;
-						order_time=order_time.substr(0,order_time.indexOf(' '));
-					if (now.diff(order_time, 'days') > 0) {
-						console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
-						continue;
-
-					}
-					console.log('after if now diff');
-					var keyname = keys[i];
-
-					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
-					console.log('key is ' + childSnapshot.key);
 
 					// set key เพื่อให้รู้ว่าข้อมูลนี้มาจากดาต้าเบส
-					$('#'+keyname+"quan").attr('data-childkey',childSnapshot.key);
 
-				} // for loop
 
-			}); //for each
-		//});  //firebase once
+				} // for loop parentkey
+
 	};
 
 	var sendOrder = function() {
