@@ -1,10 +1,6 @@
 var ModuleViewMenu = (function($) {
 
-	//var firebaseRefMenu;
-	//var firebaseRef2;
 	var change_quantity = false;
-	//var firebaseRefMenu;
-	//var firebaseRefTemp_Orders;
 	var active_category;
 	var tableNum;
 
@@ -17,7 +13,7 @@ var ModuleViewMenu = (function($) {
 
 		checkActiveTable();
 		loadFirebaseData();
-		//onFirebaseChange();
+		onFirebaseChange();
 		setEventBtnSummaryMenu();
 		onPageHide();
 	};
@@ -28,11 +24,9 @@ var ModuleViewMenu = (function($) {
 			snapshot.forEach(function(childSnapshot) {
 				$('#category-name').html(childSnapshot.val().category_name);
 			});
-
 	};
 
 	var checkActiveTable = function(){
-	//	tableNum = $('.table_num');
 
 		if(sessionStorage.activeTable){
 			tableNum.html('โต๊ะ '+sessionStorage.activeTable);
@@ -43,21 +37,17 @@ var ModuleViewMenu = (function($) {
 
 	var loadFirebaseData = function() {
 
-		var today;
+		var today_orders;
+
 		DatabaseTemp_OrdersModule.get_data_Temp_Orders_byTable(sessionStorage.activeTable)
 		.then(function(snapshot){
-
-			today =DatabaseTemp_OrdersModule.filter_today_orders(snapshot);
-			console.log('today return = '+JSON.stringify(today));
-		//	checkPendingOrder(today);
-
-			//checkPendingOrder(snapshot);
+			today_orders = DatabaseTemp_OrdersModule.filter_today_orders(snapshot);
 		})
 		.then(function(){
 			DatabaseMenuModule.get_data_menu_byId(active_category)
 			.then(function(snapshot){
 				UIUpdateListViewMenu(snapshot);
-				checkPendingOrder(today);
+				UIUpdatePendingOrders(today_orders);
 			});
 		});
 
@@ -66,9 +56,6 @@ var ModuleViewMenu = (function($) {
 			showCategoryName(snapshot);
 		});
 
-
-		//firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-
 	};
 
 	var onFirebaseChange = function() {
@@ -76,18 +63,9 @@ var ModuleViewMenu = (function($) {
 		DatabaseMenuModule.run_fn_on_change(UIUpdateMenu);
 
 		//Temp_Orders
-		firebaseRefTemp_Orders.on('child_changed', function(data) {
+		DatabaseTemp_OrdersModule.run_fn_on_change(UIUpdateQuantity);
 
-			var childData = data.val();
-			console.log('child CHANGE childData = '+JSON.stringify(childData));
-
-			var keys = Object.keys(childData.order);
-			//console.log('key.length = '+keys.length);
-			for (var i = 0; i < keys.length; i++) {
-					var keyname = keys[i];
-					UIUpdateQuantity(keyname, childData.order[keyname].quantity);
-			}
-		});
+		return false;
 
 		//ar fix
 		//http://stackoverflow.com/questions/11788902/firebase-child-added-only-get-child-added
@@ -136,7 +114,6 @@ var ModuleViewMenu = (function($) {
 		console.log('run UIUdatelistviewmenu...');
 		//	console.log(JSON.stringify(snapshot));
 		var menuHtml='';
-
 
 			snapshot.forEach(function(childSnapshot) {
 				var childKey = childSnapshot.key;
@@ -216,39 +193,27 @@ var ModuleViewMenu = (function($) {
 		}); //btn_summary_menu
 	};
 
-	var UIUpdateQuantity = function(menu_id, quantity) {
-		console.log('fn UIUpdateQuantity.... quantitiy = '+quantity + ' menu_id ='+menu_id);
-		$('#'+menu_id+'quan').text(quantity);
+	var UIUpdateQuantity = function(data) {
+		console.log('fn UIUpdateQuantity....'+JSON.stringify(data));
+		var orderKeys = Object.keys(data.order);
+		$('#'+orderKeys[0]+'quan').text(data.order[orderKeys[0]].quantity);
 	};
 
-	var checkPendingOrder = function(childData) {
+	var UIUpdatePendingOrders = function(childData) {
 
-				//var keys = Object.keys(childData.order);
-				var parentkeys = Object.keys(childData);
-				console.log('obj contains ' + parentkeys.length + ' keys: '+  parentkeys);
+		var parentkeys = Object.keys(childData);
+			console.log('obj contains ' + parentkeys.length + ' keys: '+  parentkeys);
 
-				//return false;
+			for (var i = 0; i < parentkeys.length; i++) {
 
-				for (var i = 0; i < parentkeys.length; i++) {
+				var order_time=childData[parentkeys[i]].time;
+				var orderKeys = Object.keys(childData[parentkeys[i]].order);
 
-						var order_time=childData[parentkeys[i]].time;
-						console.log('order_time = '+order_time);
-						//continue;
-
-						var orderKeys = Object.keys(childData[parentkeys[i]].order);
-
-						for (var i2 = 0; i2 < orderKeys.length; i2++) {
-							console.log('ordekey = '+orderKeys[i2]);
-							UIUpdateQuantity(orderKeys[i2], childData[parentkeys[i]].order[orderKeys[i2]].quantity);
-							//console.log('key is ' + childSnapshot.key);
-							$('#'+orderKeys[i2]+"quan").attr('data-childkey',parentkeys[i]);
-						} // for loop order key
-					//var keyname = parentkeys[i];
-
-
-
-					// set key เพื่อให้รู้ว่าข้อมูลนี้มาจากดาต้าเบส
-
+					for (var i2 = 0; i2 < orderKeys.length; i2++) {
+						console.log('ordekey = '+orderKeys[i2]);
+						UIUpdateQuantity(childData[parentkeys[i]]);
+						$('#'+orderKeys[i2]+"quan").attr('data-childkey',parentkeys[i]);
+					} // for loop order key
 
 				} // for loop parentkey
 
