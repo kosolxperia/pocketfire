@@ -65,6 +65,12 @@ var DatabaseTemp_OrdersModule = (function($) {
 
 	};
 
+  var run_fn_on_remove = function(fn){
+    firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
+      console.log('child REMOVED = '+ console.log(JSON.stringify(oldChildSnapshot)));
+    });
+  };
+
   var run_fn_on_add = function(fn){
     firebaseRefTemp_Orders.on('child_added', function(data) {
       var now = moment();

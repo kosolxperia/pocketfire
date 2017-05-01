@@ -65,13 +65,12 @@ var ModuleViewMenu = (function($) {
 		//Temp_Orders
 		DatabaseTemp_OrdersModule.run_fn_on_change(UIUpdateQuantity);
 		DatabaseTemp_OrdersModule.run_fn_on_add(UIUpdatePendingOrders);
+		//DatabaseTemp_OrdersModule.run_fn_on_remove()
 		return false;
 
 
 
-		firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
-		  console.log('child REMOVED = '+ console.log(JSON.stringify(oldChildSnapshot)));
-		});
+
 	};
 
 	var UIUpdateMenu = function(data){
