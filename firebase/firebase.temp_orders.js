@@ -58,7 +58,12 @@ var DatabaseTemp_OrdersModule = (function($) {
 	};
 
     var update_orders = function(data){
-
+        var firebaseUpdate = firebase.database().ref("Temp_Orders/"+ data.key +"/order/"+ data.menu_id);
+        firebaseUpdate.set({
+            quantity: data.quantity,
+            status: data.status,
+            edit_time: data.edit_time
+        });
     };
 
 	return {

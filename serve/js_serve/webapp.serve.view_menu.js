@@ -243,6 +243,7 @@ var ModuleViewMenu = (function($) {
 		var quan;
 
 		var orderFromDB;
+		var data_update;
 
 		//prepare key for new order
 		var firebaseRefNewOrders=firebase.database().ref("Temp_Orders").push();
@@ -258,22 +259,42 @@ var ModuleViewMenu = (function($) {
 				have_data_from_firebase  = true;
 				console.log('found old order.......');
 				childkey = $(this).attr("data-childkey");
-				firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order/"+menuId);
+				//firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order/"+menuId);
 
 				if(quan != "0"){
+					data_update = {
+						key: childkey,
+						menu_id: menuId,
+						quantity: quan,
+						status: 'pending',
+						edit_time: current_time
+					};
 
+					DatabaseTemp_OrdersModule.update_orders(data_update);
+					/*
 					firebaseRefUpdateTemp_Orders.set({
 							quantity: quan,
 							status: 'pending',
 							edit_time: current_time
 					});
+					*/
 
 				} else {
+					data_update = {
+						key: childkey,
+						menu_id: menuId,
+						quantity: quan,
+						status: 'cancel',
+						edit_time: current_time
+					};
+					DatabaseTemp_OrdersModule.update_order(data_update);
+					/*
 					firebaseRefUpdateTemp_Orders.set({
 							quantity: quan,
 							status: 'cancel',
 							edit_time: current_time
 					});
+					*/
 
 				}
 
