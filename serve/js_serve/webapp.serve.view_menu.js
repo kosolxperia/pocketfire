@@ -195,6 +195,7 @@ var ModuleViewMenu = (function($) {
 
 	var UIUpdateQuantity = function(data) {
 		console.log('fn UIUpdateQuantity....'+JSON.stringify(data));
+
 		var orderKeys = Object.keys(data.order);
 
 		for(var i=0; i < orderKeys.length; i++){

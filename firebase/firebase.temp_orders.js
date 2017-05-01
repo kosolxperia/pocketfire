@@ -25,21 +25,25 @@ var DatabaseTemp_OrdersModule = (function($) {
 
         var childData = childSnapshot.val();
 
-        var keys = Object.keys(childData.order);
-        console.log('obj contains ' + keys.length + ' keys: '+  keys);
+        if(childData.order){
+            var keys = Object.keys(childData.order);
+            console.log('obj contains ' + keys.length + ' keys: '+  keys);
 
-        for (var i = 0; i < keys.length; i++) {
-            var order_time=childData.time;
-            order_time=order_time.substr(0,order_time.indexOf(' '));
+            for (var i = 0; i < keys.length; i++) {
+                var order_time=childData.time;
+                order_time=order_time.substr(0,order_time.indexOf(' '));
 
-            if (now.diff(order_time, 'days') > 0) {
-                console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
-                continue;
-            }
+                if (now.diff(order_time, 'days') > 0) {
+                    console.log('found very old order = '+keys+" " +childData.time.substr(0,childData.time.indexOf(' '), 'days'));
+                    continue;
+                }
 
-        var keyname = keys[i];
+            var keyname = keys[i];
 
-        todayOrders[childSnapshot.key] = childData;
+            todayOrders[childSnapshot.key] = childData;
+        }
+
+
 
       } // for loop
 
@@ -52,7 +56,11 @@ var DatabaseTemp_OrdersModule = (function($) {
         console.log('fn Temp_Orders change...');
         firebaseRefTemp_Orders.on('child_changed', function(data) {
             console.log('child change Temp_Orders...= '+JSON.stringify(data));
-                    fn(data.val());
+            if(data.order){
+                // not remove order
+                fn(data.val());
+            }
+
 		});
 
 	};
@@ -68,6 +76,13 @@ var DatabaseTemp_OrdersModule = (function($) {
 
     var remove_orders = function(data){
         firebase.database().ref("Temp_Orders/"+ data.key +"/order/"+ data.menu_id).remove();
+
+        firebase.database().ref("Temp_Orders/"+ data.key).once('value', function(snapshot){
+            if(!snapshot.child("order").hasChildren()){
+                firebase.database().ref("Temp_Orders/"+ data.key).remove();
+            }
+        });
+
     };
 
     var get_new_orders_id = function(){

@@ -104,7 +104,7 @@ var ViewSummaryModule = (function($) {
 		var menuId;
 		var parentKey;
 		var quan;
-		//var firebaseRefUpdateTemp_Orders;
+	
 		var current_time = moment().format('YYYY-MM-DD HH:mm:ss');
 		var data_update;
 
@@ -129,20 +129,10 @@ var ViewSummaryModule = (function($) {
 				data_update = {
 					key: parentKey,
 					menu_id: menuId
-				//	quantity: quan,
-					//status: 'cancel',
-					//edit_time: current_time
 				};
-				//DatabaseTemp_OrdersModule.update_orders(data_update);
+
 				DatabaseTemp_OrdersModule.remove_orders(data_update);
-				/*
-				firebaseRefUpdateTemp_Orders.set({
-						quantity: quan,
-						status: 'cancel',
-						edit_time: current_time
-				});
-				*/
-				//firebaseRefUpdateTemp_Orders.remove();
+
 			}
 
 
