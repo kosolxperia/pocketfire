@@ -66,11 +66,25 @@ var DatabaseTemp_OrdersModule = (function($) {
         });
     };
 
+    var get_new_orders_id = function(){
+
+        return firebase.database().ref("Temp_Orders").push();
+
+    };
+
+    var set_new_orders = function(ref, data) {
+        // for new order that prepare key already.
+        ref.set(data);
+    };
+
 	return {
         run_fn_on_change: run_fn_on_change,
         get_data_Temp_Orders_byTable: get_data_Temp_Orders_byTable,
         filter_today_orders: filter_today_orders,
-        update_orders: update_orders
+        update_orders: update_orders,
+        get_new_orders_id: get_new_orders_id,
+        set_new_orders: set_new_orders
+
 	};
 
 })(jQuery);

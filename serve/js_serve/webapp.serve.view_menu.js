@@ -196,7 +196,11 @@ var ModuleViewMenu = (function($) {
 	var UIUpdateQuantity = function(data) {
 		console.log('fn UIUpdateQuantity....'+JSON.stringify(data));
 		var orderKeys = Object.keys(data.order);
-		$('#'+orderKeys[0]+'quan').text(data.order[orderKeys[0]].quantity);
+
+		for(var i=0; i < orderKeys.length; i++){
+			$('#'+orderKeys[i]+'quan').text(data.order[orderKeys[i]].quantity);
+		}
+
 	};
 
 	var UIUpdatePendingOrders = function(childData) {
@@ -246,7 +250,8 @@ var ModuleViewMenu = (function($) {
 		var data_update;
 
 		//prepare key for new order
-		var firebaseRefNewOrders=firebase.database().ref("Temp_Orders").push();
+		//var firebaseRefNewOrders=firebase.database().ref("Temp_Orders").push();
+		var firebaseRefNewOrders = DatabaseTemp_OrdersModule.get_new_orders_id();
 
 		$("#list_view_menu .ui-li-count[data-update_item]").each(function(index){
 
@@ -259,7 +264,6 @@ var ModuleViewMenu = (function($) {
 				have_data_from_firebase  = true;
 				console.log('found old order.......');
 				childkey = $(this).attr("data-childkey");
-				//firebaseRefUpdateTemp_Orders = firebase.database().ref("Temp_Orders/"+childkey+"/order/"+menuId);
 
 				if(quan != "0"){
 					data_update = {
@@ -271,13 +275,6 @@ var ModuleViewMenu = (function($) {
 					};
 
 					DatabaseTemp_OrdersModule.update_orders(data_update);
-					/*
-					firebaseRefUpdateTemp_Orders.set({
-							quantity: quan,
-							status: 'pending',
-							edit_time: current_time
-					});
-					*/
 
 				} else {
 					data_update = {
@@ -288,13 +285,6 @@ var ModuleViewMenu = (function($) {
 						edit_time: current_time
 					};
 					DatabaseTemp_OrdersModule.update_order(data_update);
-					/*
-					firebaseRefUpdateTemp_Orders.set({
-							quantity: quan,
-							status: 'cancel',
-							edit_time: current_time
-					});
-					*/
 
 				}
 
@@ -316,8 +306,8 @@ var ModuleViewMenu = (function($) {
 		// save new order
 		var keys = Object.keys(jsonOrder.order);
 		if(keys.length > 0){
-				//firebase.database().ref("Temp_Orders").push(jsonOrder);
-				firebaseRefNewOrders.set(jsonOrder);
+				DatabaseTemp_OrdersModule.set_new_orders(firebaseRefNewOrders, jsonOrder);
+				//firebaseRefNewOrders.set(jsonOrder);
 				console.log('save new order jsonOrder to DB');
 		}
 
