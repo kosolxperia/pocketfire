@@ -1,34 +1,42 @@
 var ModuleViewMenu = (function($) {
 
-	//var firebaseRefMenu;
-	//var firebaseRef2;
+	var firebaseRefMenu;
+	var firebaseRef2;
 	var change_quantity = false;
-	//var firebaseRefMenu;
+	var firebaseRefMenu;
 	var firebaseRefTemp_Orders;
 	var active_category;
 	var tableNum;
 
+
 	var init = function() {
+		console.log('viewmenu init...****');
 		active_category = sessionStorage.activeCategory;
+		firebaseRefMenu = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
+		firebaseRef2 = firebase.database().ref("Category").orderByKey().equalTo(String(active_category));
 		tableNum = $('.table_num');
 		sessionStorage.fromPage="view_menu";
 
 		console.log('active category = '+ active_category);
 
 		checkActiveTable();
+
 		loadFirebaseData();
 		onFirebaseChange();
+		showCategoryName();
 		setEventBtnSummaryMenu();
 		onPageHide();
+		//bindEvents();
 	};
 
-	var showCategoryName = function(snapshot){
-		console.log('fn showCategoryName... snapshot= '+JSON.stringify(snapshot));
-
+	var showCategoryName = function(){
+		//orderByKey use String!!!!
+		firebaseRef2 = firebase.database().ref("Category").orderByKey().equalTo(String(active_category));
+		firebaseRef2.once('value', function(snapshot) {
 			snapshot.forEach(function(childSnapshot) {
 				$('#category-name').html(childSnapshot.val().category_name);
 			});
-
+		}); //once
 	};
 
 	var checkActiveTable = function(){
@@ -42,31 +50,23 @@ var ModuleViewMenu = (function($) {
 	};
 
 	var loadFirebaseData = function() {
-
-		DatabaseMenuModule.get_data_menu_byId(active_category)
-		.then(function(snapshot){
-			UIUpdateListViewMenu(snapshot);
-		});
-
-		DatabaseCategoryModule.get_data_category_byId(active_category)
-		.then(function(snapshot){
-			showCategoryName(snapshot);
-		});
+		firebaseRefMenu.once('value', function(snapshot) {
+				UIUpdateListViewMenu(snapshot);
+		});  //firebase once
 
 		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-
+		//firebaseRefTemp_Orders.orderByChild("time");
 	};
 
 	var onFirebaseChange = function() {
 		console.log('function onFirebaseChange....');
-		DatabaseMenuModule.run_fn_on_change(UIUpdateMenu);
-		/*
+
 		firebaseRefMenu.on('child_changed', function(data) {
 			console.log('child change '+ data.key + ' and ' + data.val().category_name);
 				//$('#'+data.key).text(data.val().category_name);
 				UIUpdateMenu(data.key, data.val());
 		});
-*/
+
 
 		//Temp_Orders
 		firebaseRefTemp_Orders.on('child_changed', function(data) {
@@ -120,10 +120,10 @@ var ModuleViewMenu = (function($) {
 		});
 	};
 
-	var UIUpdateMenu = function(data){
-		$('#' + data.key).text(data.val().menu_name);
-		$('#' + data.key +'price').text(data.val().menu_price);
-		$('#' + data.key +'img').attr('src','../' + data.val().menu_picture);
+	var UIUpdateMenu = function(key, data){
+		$('#' + key).text(data.menu_name);
+		$('#' + key +'price').text(data.menu_price);
+		$('#' + key +'img').attr('src','../' + data.menu_picture);
 	};
 
 	var UIUpdateListViewMenu = function(snapshot){

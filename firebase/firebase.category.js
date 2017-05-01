@@ -1,7 +1,7 @@
-console.log('in DatabaseMenu...');
+console.log('in Database category...');
 var DatabaseCategoryModule = (function($) {
 
-    var firebaseRef = firebase.database().ref("DinningTable");
+    var firebaseRef = firebase.database().ref("Category");
 
 	var init = function() {
 
@@ -9,7 +9,7 @@ var DatabaseCategoryModule = (function($) {
 
 	var get_data_category = function(){
 
-        firebaseRef = firebase.database().ref("Category");
+      //  firebaseRef = firebase.database().ref("Category");
 
         return firebaseRef.once('value', function(snapshot) {
 
@@ -18,6 +18,14 @@ var DatabaseCategoryModule = (function($) {
          // .once Always RETURN Promise!!!!
 
 	};
+
+  var get_data_category_byId = function(active_category){
+    var firebaseRef2 = firebase.database().ref("Category").orderByKey().equalTo(String(active_category));
+
+    return firebaseRef2.once('value', function(snapshot) {
+
+     });
+  };
 
 	var run_fn_on_change = function(fn){
         console.log('fn cate change...');
@@ -32,7 +40,8 @@ var DatabaseCategoryModule = (function($) {
 
 	return {
         get_data_category: get_data_category,
-        run_fn_on_change: run_fn_on_change
+        run_fn_on_change: run_fn_on_change,
+        get_data_category_byId: get_data_category_byId
 	};
 
 })(jQuery);
