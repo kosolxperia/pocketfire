@@ -1,17 +1,16 @@
 console.log('in DatabaseMenu...');
 var DatabaseMenuModule = (function($) {
 
-    var firebaseRef = firebase.database().ref("DinningTable");
-
-	var init = function() {
+  var firebaseRefMenu = firebase.database().ref("Menu")
+  var init = function() {
 
 	};
 
-	var get_data_dinning_table = function(){
+	var get_data_menu_byId = function(active_category){
 
-        firebaseRef = firebase.database().ref("DinningTable");
+      var firebaseRefMenu2 = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
 
-        return firebaseRef.once('value', function(snapshot) {
+        return firebaseRefMenu2.once('value', function(snapshot) {
 
          });
 
@@ -21,16 +20,16 @@ var DatabaseMenuModule = (function($) {
 
 	var run_fn_on_change = function(fn){
         // child change not return Prmomise !!!!
-        firebaseRef.on('child_changed', function(data) {
-            console.log('child change dinningtable...= '+JSON.stringify(data));
-            fn(data.key, data.val().table_status);
+        firebaseRefMenu.on('child_changed', function(data) {
+            console.log('child change menu...= '+JSON.stringify(data));
+            fn(data);
 
 		});
 
 	};
 
 	return {
-        get_data_dinning_table: get_data_dinning_table,
+        get_data_menu_byId: get_data_menu_byId,
         run_fn_on_change: run_fn_on_change
 	};
 
