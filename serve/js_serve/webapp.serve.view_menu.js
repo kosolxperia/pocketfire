@@ -278,14 +278,13 @@ var ModuleViewMenu = (function($) {
 					DatabaseTemp_OrdersModule.update_orders(data_update);
 
 				} else {
+
 					data_update = {
 						key: childkey,
-						menu_id: menuId,
-						quantity: quan,
-						status: 'cancel',
-						edit_time: current_time
+						menu_id: menuId
 					};
-					DatabaseTemp_OrdersModule.update_orders(data_update);
+
+					DatabaseTemp_OrdersModule.remove_orders(data_update);
 
 				}
 

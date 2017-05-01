@@ -57,7 +57,7 @@ var DatabaseTemp_OrdersModule = (function($) {
         firebaseRefTemp_Orders.on('child_changed', function(data) {
             console.log('child change Temp_Orders...= '+JSON.stringify(data));
             if(data.order){
-                // not remove order
+                // not remove ALL order
                 fn(data.val());
             }
 
