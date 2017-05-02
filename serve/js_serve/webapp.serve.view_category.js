@@ -8,6 +8,7 @@ var ViewCategoryModule = (function($) {
 		loadFirebaseData();
 		onFirebaseChange();
 		checkActiveTable();
+		setEventBtnSummaryMenu();
 	};
 
 	var loadFirebaseData = function(){
@@ -82,6 +83,16 @@ var ViewCategoryModule = (function($) {
 		}else{
 			tableNum.html('ไม่ได้เลือกโต๊ะ');
 		}
+	};
+
+	var setEventBtnSummaryMenu = function() {
+
+		$("#btn_summary_category").on("click",function(){
+			$.mobile.changePage("view_summary.html", {
+				changeHash: false
+			});
+		});
+
 	};
 
 	return {
