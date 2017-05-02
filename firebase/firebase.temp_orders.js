@@ -75,7 +75,7 @@ var DatabaseTemp_OrdersModule = (function($) {
     firebaseRefTemp_Orders.on('child_removed', function(oldChildSnapshot) {
       console.log('child REMOVED = '+ JSON.stringify(oldChildSnapshot));
       console.log('key = '+oldChildSnapshot.key);
-      //fn(oldChildSnapshot.val());
+      fn(oldChildSnapshot);
     });
   };
 
@@ -128,9 +128,10 @@ var DatabaseTemp_OrdersModule = (function($) {
           });
 
       }
-    
+
     };
 
+    // not use!!!
     var remove_orders = function(data){
         firebase.database().ref("Temp_Orders/"+ data.key +"/order/"+ data.menu_id).remove();
 
