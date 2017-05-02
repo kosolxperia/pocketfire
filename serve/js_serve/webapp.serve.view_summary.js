@@ -24,49 +24,53 @@ var ViewSummaryModule = (function($) {
 	};
 
 	var loadFirebaseData = function(){
-		var firebaseRefMenu;
-		var firebaseRefTemp_Orders;
+		//var firebaseRefMenu;
+	//	var firebaseRefTemp_Orders;
 		var temp={};
 		var order_join_menu_data = {};
 		var keyname;
 		var data_order_snap;
 		var data_menu_snap;
 
-		firebaseRefTemp_Orders = firebase.database().ref("Temp_Orders").orderByChild("table_number").equalTo(String(sessionStorage.activeTable));
-		firebaseRefMenu = firebase.database().ref("Menu");
+		var today_orders;
 
-		firebaseRefTemp_Orders.once('value')
-		.then(function(orderSnap){
-					// 1.. ดึงข้อมูลออร์เดอร์
-					//console.log('orderSnap KEY = '+orderSnap)
-					data_order_snap = orderSnap;
-		}).then(function(){
-					// 2. ดึงข้อมูลเมนู
-					firebaseRefMenu.once('value').then(function(menuSnap){
-						data_menu_snap = menuSnap;
-					}).then(function(){
-						// 3. เอาข้อมูลแต่ละออร์เดอร์มา join ข้อมูลเมนู
-						data_order_snap.forEach(function(childSnapshot) {
-							//console.log('ordersnap KEY = '+childSnapshot.key);
-							var parent_key = childSnapshot.key;
-							var child_order_snap = childSnapshot.val();
+		DatabaseTemp_OrdersModule.get_data_Temp_Orders_byTable(sessionStorage.activeTable)
+		.then(function(snapshot){
+			// 1.. ดึงข้อมูลออร์เดอร์
+			today_orders = DatabaseTemp_OrdersModule.filter_today_orders(snapshot);
+		})
+		.then(function(){
+			//DatabaseMenuModule.get_data_menu_byId(sessionStorage.activeCategory)
+			DatabaseMenuModule.get_data_menu()
+			.then(function(menuSnap){
+				// 2. ดึงข้อมูลเมนู
+				data_menu_snap = menuSnap;
+				console.log('menuSnap = '+JSON.stringify(menuSnap));
+			}).then(function(){
+				// 3. เอาข้อมูลแต่ละออร์เดอร์มา join ข้อมูลเมนู
+				var parentkeys = Object.keys(today_orders);
+					console.log('obj contains ' + parentkeys.length + ' keys: '+  parentkeys);
 
-							for (var k in child_order_snap.order){
-									keyname = k;
-									//console.log('key ='+k);
-									temp = joinMenuData(child_order_snap.order, data_menu_snap.val(), keyname, parent_key);
-									$.extend(order_join_menu_data, temp);
-							} // for
+					for (var i = 0; i < parentkeys.length; i++) {
+						var parent_key = parentkeys[i];
+						var child_order_snap = today_orders[parentkeys[i]].order;
+						var orderKeys = Object.keys(today_orders[parentkeys[i]].order);
 
-							 //console.log('temp =' + JSON.stringify(temp));
-							 console.log('order_temp_orders =' + JSON.stringify(order_join_menu_data));
-						}); // data_order_snap.forEach
+							for (var i2 = 0; i2 < orderKeys.length; i2++) {
+								keyname = orderKeys[i2];
+								temp = joinMenuData(today_orders[parentkeys[i]].order, data_menu_snap.val(), keyname, parent_key);
+								$.extend(order_join_menu_data, temp);
+								console.log('order_temp_orders =' + JSON.stringify(order_join_menu_data));
+							} // for loop order key
 
-						 // 4. update UI
-					   UIUpdateListSummary(order_join_menu_data);
-					}); // then menu
+						} // for loop parentkey
 
-				});  // then temp_orders
+					 // 4. update UI
+					 UIUpdateListSummary(order_join_menu_data);
+			  }); // then menu
+		});
+
+
 	};
 
 	var setFromPage = function() {
@@ -88,6 +92,7 @@ var ViewSummaryModule = (function($) {
 		var keys = Object.keys(childData);
 		for (var i = 0; i < keys.length; i++) {
 				var keyname = keys[i];
+				console.log(keyname);
 				orderHtml += '<li data-icon="false"><a class="link_menu"><h1>' + childData[keyname].menu_data.menu_name + '</h1>';
 				orderHtml += '<span class="ui-li-count" data-menu_id="' + keyname +'" data-parentkey="'+ childData[keyname].parent_key +'">'+ childData[keyname].quantity +'</span></li>';
 				orderHtml += '</a></li>';
@@ -104,7 +109,7 @@ var ViewSummaryModule = (function($) {
 		var menuId;
 		var parentKey;
 		var quan;
-	
+
 		var current_time = moment().format('YYYY-MM-DD HH:mm:ss');
 		var data_update;
 

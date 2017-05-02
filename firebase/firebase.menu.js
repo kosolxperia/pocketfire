@@ -6,6 +6,12 @@ var DatabaseMenuModule = (function($) {
 
 	};
 
+    var get_data_menu = function(){
+        return firebaseRefMenu.once('value', function(snapshot) {
+
+         });
+    };
+
 	var get_data_menu_byId = function(active_category){
 
       var firebaseRefMenu2 = firebase.database().ref("Menu").orderByChild("category_id").equalTo(active_category);
@@ -29,6 +35,7 @@ var DatabaseMenuModule = (function($) {
 	};
 
 	return {
+        get_data_menu: get_data_menu,
         get_data_menu_byId: get_data_menu_byId,
         run_fn_on_change: run_fn_on_change
 	};
