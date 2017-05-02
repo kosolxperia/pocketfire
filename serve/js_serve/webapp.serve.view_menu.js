@@ -268,7 +268,6 @@ var ModuleViewMenu = (function($) {
 						edit_time: current_time
 					};
 					console.log('update_orders = '+JSON.stringify(update_order[menuId]));
-					//DatabaseTemp_OrdersModule.update_orders(data_update);
 
 				} else {
 					//data_update = {
@@ -279,9 +278,6 @@ var ModuleViewMenu = (function($) {
 						status: 'cancel',
 						edit_time: current_time
 					};
-
-					//DatabaseTemp_OrdersModule.update_orders(data_update);
-					// out of context jQuery !!!!!!
 
 				}
 
