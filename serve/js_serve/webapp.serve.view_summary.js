@@ -111,7 +111,7 @@ var ViewSummaryModule = (function($) {
 		var quan;
 
 		var current_time = moment().format('YYYY-MM-DD HH:mm:ss');
-		var data_update;
+		var update_order = [];
 
 		$("#list_summary .ui-li-count[data-update_item]").each(function(index){
 
@@ -120,29 +120,32 @@ var ViewSummaryModule = (function($) {
 			quan = $(this).text();
 
 			if(quan != "0"){
-				data_update = {
+				update_order[menuId]={
 					key: parentKey,
 					menu_id: menuId,
 					quantity: quan,
-					status: 'order',
+					status: 'pending',
 					edit_time: current_time
 				};
-				DatabaseTemp_OrdersModule.update_orders(data_update);
+				//DatabaseTemp_OrdersModule.update_orders(data_update);
 
 			} else {
 
-				data_update = {
+				update_order[menuId]={
 					key: parentKey,
-					menu_id: menuId
+					menu_id: menuId,
+					quantity: quan,
+					status: 'cancel',
+					edit_time: current_time
 				};
 
-				DatabaseTemp_OrdersModule.remove_orders(data_update);
+				//DatabaseTemp_OrdersModule.remove_orders(data_update);
 
 			}
 
-
 		}); // list_view_menu .each
-
+		// UPDATE outside .each() !!!!
+		DatabaseTemp_OrdersModule.update_orders(update_order);
 	};
 
 	var setEventBtn = function() {
