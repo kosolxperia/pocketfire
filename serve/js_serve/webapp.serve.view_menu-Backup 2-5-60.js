@@ -66,11 +66,31 @@ var ModuleViewMenu = (function($) {
 		DatabaseTemp_OrdersModule.set_active_table(sessionStorage.activeTable);
 		DatabaseTemp_OrdersModule.run_fn_on_change(UIUpdateQuantity);
 		DatabaseTemp_OrdersModule.run_fn_on_add(UIUpdatePendingOrders);
-		DatabaseTemp_OrdersModule.run_fn_on_remove(UIUpdateQuantity)
+		DatabaseTemp_OrdersModule.run_fn_on_remove(UIRemoveOrders);
 		return false;
 
 
 
+
+	};
+
+	var UIRemoveOrders = function(data) {
+		//console.log('fn UIRemoveOrders....data = '+JSON.stringify(data));
+
+		var orderKeys = Object.keys(data.val().order);
+		var elm_quan;
+		for(var i=0; i < orderKeys.length; i++){
+			
+			elm_quan = $('#'+orderKeys[i]+'quan');
+			if(elm_quan.attr("data-childkey") == data.key){
+				elm_quan.text("0");
+				elm_quan.removeAttr("data-update_item");
+				elm_quan.removeAttr("data-childkey");
+			}
+			//$('#'+orderKeys[i]+'quan').text("0");
+			//$('#'+orderKeys[i]+'quan').removeAttr("data-update_item");
+		//	$('#'+orderKeys[i]+'quan').removeAttr("data-childkey");
+		}
 
 	};
 

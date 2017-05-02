@@ -80,16 +80,16 @@ var ModuleViewMenu = (function($) {
 		var orderKeys = Object.keys(data.val().order);
 		var elm_quan;
 		for(var i=0; i < orderKeys.length; i++){
-			
+
 			elm_quan = $('#'+orderKeys[i]+'quan');
-			if(elm_quan.attr("data-childkey") == data.key){
+			if(elm_quan.attr("data-parentkey") == data.key){
 				elm_quan.text("0");
 				elm_quan.removeAttr("data-update_item");
-				elm_quan.removeAttr("data-childkey");
+				elm_quan.removeAttr("data-parentkey");
 			}
 			//$('#'+orderKeys[i]+'quan').text("0");
 			//$('#'+orderKeys[i]+'quan').removeAttr("data-update_item");
-		//	$('#'+orderKeys[i]+'quan').removeAttr("data-childkey");
+		//	$('#'+orderKeys[i]+'quan').removeAttr("data-parentkey");
 		}
 
 	};
@@ -209,7 +209,7 @@ var ModuleViewMenu = (function($) {
 					for (var i2 = 0; i2 < orderKeys.length; i2++) {
 						console.log('ordekey = '+orderKeys[i2]);
 						UIUpdateQuantity(childData[parentkeys[i]]);
-						$('#'+orderKeys[i2]+"quan").attr('data-childkey',parentkeys[i]);
+						$('#'+orderKeys[i2]+"quan").attr('data-parentkey',parentkeys[i]);
 					} // for loop order key
 
 				} // for loop parentkey
@@ -225,7 +225,7 @@ var ModuleViewMenu = (function($) {
 
 		console.log('sendOrder....');
 		var firebaseRefUpdateTemp_Orders;
-		var childkey; // for old order
+		var parent_key; // for old order
 		var jsonOrder = {};
 
 		var current_time = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -251,17 +251,17 @@ var ModuleViewMenu = (function($) {
 			menuId = $(this).attr("data-menu_id");
 			quan = $(this).text();
 
-			if($(this).attr("data-childkey")){
+			if($(this).attr("data-parentkey")){
 
 				// exits in Temp_Orders
 				have_data_from_firebase  = true;
 				console.log('found old order.......');
-				childkey = $(this).attr("data-childkey");
+				parent_key = $(this).attr("data-parentkey");
 
 				if(quan != "0"){
 					//data_update = {
 					update_order[menuId]={
-						key: childkey,
+						key: parent_key,
 						menu_id: menuId,
 						quantity: quan,
 						status: 'pending',
@@ -273,7 +273,7 @@ var ModuleViewMenu = (function($) {
 				} else {
 					//data_update = {
 					update_order[menuId]={
-						key: childkey,
+						key: parent_key,
 						menu_id: menuId,
 						quantity: quan,
 						status: 'cancel',
@@ -289,13 +289,13 @@ var ModuleViewMenu = (function($) {
 
 			else {
 
-				$(this).attr("data-childkey", firebaseRefNewOrders.key);
+				$(this).attr("data-parentkey", firebaseRefNewOrders.key);
 
 				jsonOrder.order[menuId]= {
 					quantity: quan,
 					status: 'pending'
 				}
-			}  //end if if($(this).attr("data-childkey"))
+			}  //end if if($(this).attr("data-parentkey"))
 
 		});  // list view menu each ******
 		console.log('JSON ORDER = '+JSON.stringify(jsonOrder));
