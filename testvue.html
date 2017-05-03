@@ -10,6 +10,7 @@
   <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
   <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
+  <script src="httpVueLoader.js"></script>
 
 </head>
 <body>
@@ -21,6 +22,7 @@
 
     <div id="content" role="main" class="ui-content">
       <component :is="page"></component> <!-- Bagian ini adalah container halaman -->
+      <my-component></my-component>
     </div>
 
     <div data-role="footer" data-position="fixed">
@@ -69,7 +71,10 @@
 
   // Meregistrasi template halaman dashboard menjadi tag <page-dashboard>
   Vue.component('page-dashboard', {
-    template: '#template-dashboard',
+    //template: '#template-dashboard',
+    components: {
+			'my-template': httpVueLoader('my-components.vue')
+		},
     data: function () {
       return {
         namaHalaman: 'Dashboard Page',
