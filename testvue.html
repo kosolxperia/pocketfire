@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VueJS | JQuery Mobile</title>
+
+  <!-- Libraries -->
+
+  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
+
+</head>
+<body>
+
+  <div id="header">
+    <div data-role="header" data-position="fixed">
+      <h1>JQuery Mobile Header</h1>
+    </div>
+
+    <div id="content" role="main" class="ui-content">
+      <component :is="page"></component> <!-- Bagian ini adalah container halaman -->
+    </div>
+
+    <div data-role="footer" data-position="fixed">
+      <h1>JQuery Mobile Footer</h1>
+    </div>
+  </div>
+
+  <!--  Membuat template halaman dashboard -->
+  <template id="template-login">
+    <i>Ini adalah halaman {{ namaHalaman }}</i><br>
+    <button type="button" @click="actionLogin">Login</button>
+  </template>
+
+  <!--  Membuat template halaman login -->
+  <template id="template-dashboard">
+    <ul data-role="listview" id="list_view_menu" data-inset="true">
+
+			<li data-role="list-divider" id="category-name">โต๊ะอาหาร</li>
+      <li>ar</li>
+
+		</ul>
+
+  </template>
+
+  <script type="text/javascript">
+
+  // Meregistrasi template halaman login menjadi tag <page-login>
+  Vue.component('page-login', {
+    template: '#template-login',
+    data: function () {
+      return {
+        namaHalaman: 'Login Page',
+      };
+    },
+    methods: {
+      actionLogin: function () {
+        content.page = 'page-dashboard'; // memindahkan halaman
+
+        // Paksa JQuery Mobile melakukan reinisialisasi
+        content.$nextTick(function () {
+          $('#content').trigger('create');
+        });
+      },
+    },
+  });
+
+  // Meregistrasi template halaman dashboard menjadi tag <page-dashboard>
+  Vue.component('page-dashboard', {
+    template: '#template-dashboard',
+    data: function () {
+      return {
+        namaHalaman: 'Dashboard Page',
+      };
+    },
+    methods: {
+      actionBack: function () {
+        content.page = 'page-login'; // memindahkan halaman
+
+        // Paksa JQuery Mobile melakukan reinisialisasi
+        content.$nextTick(function () {
+          $('#content').trigger('create');
+        });
+      },
+    },
+  });
+
+  var content = new Vue({
+    el: '#content',
+    data: {
+      page: 'page-login', // <component> diisi dengan component page-login yg baru dibuat diatas
+      },
+    });
+
+  </script>
+
+</body>
+</html>
