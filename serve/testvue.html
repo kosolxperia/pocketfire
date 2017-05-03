@@ -6,11 +6,47 @@
 
   <!-- Libraries -->
 
-  <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
-  <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-  <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  <link rel="stylesheet" href="../css/jquery.ui-1.8.23.custom.css" />
+  <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.min.css" />
+
+ <script src="../js/jquery-1.12.4.min.js"></script>
+
+  <script src="../js/jquery-ui-1.8.23.custom.min.js"></script>
+  <script src="../js/jquery.mobile-1.4.5.min.js"></script>
+
+  <script src="../js/moment-with-locales.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/3.7.6/firebase.js"></script>
+
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyClhNcjpjioc8SKZZ1qaiZKJKXp4usWctA",
+      authDomain: "pocketrestuarant.firebaseapp.com",
+      databaseURL: "https://pocketrestuarant.firebaseio.com",
+      projectId: "pocketrestuarant",
+      storageBucket: "pocketrestuarant.appspot.com",
+      messagingSenderId: "730805162623"
+    };
+    firebase.initializeApp(config);
+  </script>
+
+  <script src="../firebase/firebase.dinningtable.js"></script>
+  <script src="../firebase/firebase.category.js"></script>
+  <script src="../firebase/firebase.menu.js"></script>
+  <script src="../firebase/firebase.temp_orders.js"></script>
+
+  <script src="js_serve/webapp.serve.view_category.js"></script>
+  <script src="js_serve/webapp.serve.view_menu.js"></script>
+  <script src="js_serve/webapp.serve.view_summary.js"></script>
+  <script src="js_serve/webapp.serve.view_table_order_detail.js"></script>
+  <script src="js_serve/webapp.serve.view_table.js"></script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
-  <script src="httpVueLoader.js"></script>
+
 
 </head>
 <body>
@@ -31,9 +67,10 @@
   </div>
 
   <!--  Membuat template halaman dashboard -->
-  <template id="template-login">
-    <i>Ini adalah halaman {{ namaHalaman }}</i><br>
-    <button type="button" @click="actionLogin">Login</button>
+  <template id="template-view_menu">
+      <ul data-role="listview" data-inset="true" id="list_view_table">
+          <li data-role="list-divider">โต๊ะอาหาร</li>
+      </ul>
   </template>
 
   <!--  Membuat template halaman login -->
@@ -50,9 +87,10 @@
   <script type="text/javascript">
 
   // Meregistrasi template halaman login menjadi tag <page-login>
-  Vue.component('page-login', {
-    template: '#template-login',
+  Vue.component('page-view_menu', {
+    template: '#template-view_menu',
     data: function () {
+        ViewTableModule.init();
       return {
         namaHalaman: 'Login Page',
       };
@@ -73,7 +111,7 @@
   Vue.component('page-dashboard', {
     //template: '#template-dashboard',
     components: {
-			'my-template': httpVueLoader('my-components.vue')
+			'my-template': 'my-components.vue'
 		},
     data: function () {
       return {
@@ -95,7 +133,7 @@
   var content = new Vue({
     el: '#content',
     data: {
-      page: 'page-login', // <component> diisi dengan component page-login yg baru dibuat diatas
+      page: 'page-view_menu', // <component> diisi dengan component page-login yg baru dibuat diatas
       },
     });
 
