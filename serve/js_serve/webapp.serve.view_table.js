@@ -12,7 +12,7 @@ var ViewTableModule = (function($) {
 		.then(function(data){
 			console.log('data = '+JSON.stringify(data));
 			//UIUpdateListViewTable(data);
-			//return data
+
 		});
 
 	};

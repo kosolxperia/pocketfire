@@ -58,7 +58,7 @@
 
     <div id="content" role="main" class="ui-content">
       <component :is="page"></component> <!-- Bagian ini adalah container halaman -->
-      <my-component></my-component>
+
     </div>
 
     <div data-role="footer" data-position="fixed">
@@ -71,9 +71,10 @@
 
       <ul data-role="listview" data-inset="true" id="list_view_table">
           <li data-role="list-divider">โต๊ะอาหาร</li>
-          <li v-for="item in vData">
-
+          <li v-for="item  in vData" class="ui-li-has-count">
+              {{ item.key }}
                 {{ item.table_status }}<br>
+
 
 
 
@@ -98,34 +99,41 @@
   // Meregistrasi template halaman login menjadi tag <page-login>
   Vue.component('page-view_menu', {
     template: '#template-view_menu',
+    mounted: function () {
+    this.$nextTick(function () {
+      console.log('next tick');
+      $.mobile.changePage('view_category.html');
+      // $('#content').trigger('create');
+console.log('next tick2');
+        jQuery(this.el).find('#list_view_table').listview().listview('refresh');
+    })
+},
     data: function () {
         var vData = [];
         ViewTableModule.init();
         DatabaseDinningModule.get_data_dinning_table()
-		.then(function(data){
-		         // vData=data;
-                 // console.log('vData = '+JSON.stringify(vData));
-                 data.forEach(function(snapshot)){
+		        .then(function(data){
 
-                     vData.push({
-                         table_id: snapshot.key,
-                         table_status: snapshot.val().table_status
-                     });
+                //  console.log('vData = '+JSON.stringify(vData));
+
+                 data.forEach(function(snapshot){
+                  var arsnapshot = snapshot.val();
+                      arsnapshot.key=snapshot.key;
+                     vData.push(arsnapshot);
+                  //   console.log(snapshot.key);
+                  //   console.log("snapshot = "+JSON.stringify(snapshot.val()));
+                  //  console.log("vData = "+JSON.stringify(vData));
                  });
-                 });
+
+              });
 	//	});
-        var j =[
-  { message: 'Foo' },
-  { message: 'Bar' }
-]
-}
-console.log('j = '+JSON.stringify(j));
+
+
+console.log('data function');
 
       return {
         namaHalaman: 'Login Page',
         vData: vData,
-        ar: 'kosol',
-        items: j,
         todos: [
   { text: 'Learn JavaScript' },
   { text: 'Learn Vue' },
@@ -173,6 +181,12 @@ console.log('j = '+JSON.stringify(j));
     data: {
       page: 'page-view_menu', // <component> diisi dengan component page-login yg baru dibuat diatas
       },
+      mounted: function () {
+      this.$nextTick(function () {
+        // $('#content').trigger('create');
+          $('#list_view_table').listview()
+      })
+    },
     });
 
   </script>
