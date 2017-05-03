@@ -45,7 +45,7 @@
   <script src="js_serve/webapp.serve.view_table_order_detail.js"></script>
   <script src="js_serve/webapp.serve.view_table.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.26/vue.min.js"></script>
+  <script src="../js/vue.js"></script>
 
 
 </head>
@@ -68,8 +68,17 @@
 
   <!--  Membuat template halaman dashboard -->
   <template id="template-view_menu">
+
       <ul data-role="listview" data-inset="true" id="list_view_table">
           <li data-role="list-divider">โต๊ะอาหาร</li>
+          <li v-for="item in vData">
+
+                {{ item.table_status }}<br>
+
+
+
+
+        </li>
       </ul>
   </template>
 
@@ -90,9 +99,38 @@
   Vue.component('page-view_menu', {
     template: '#template-view_menu',
     data: function () {
+        var vData = [];
         ViewTableModule.init();
+        DatabaseDinningModule.get_data_dinning_table()
+		.then(function(data){
+		         // vData=data;
+                 // console.log('vData = '+JSON.stringify(vData));
+                 data.forEach(function(snapshot)){
+
+                     vData.push({
+                         table_id: snapshot.key,
+                         table_status: snapshot.val().table_status
+                     });
+                 });
+                 });
+	//	});
+        var j =[
+  { message: 'Foo' },
+  { message: 'Bar' }
+]
+}
+console.log('j = '+JSON.stringify(j));
+
       return {
         namaHalaman: 'Login Page',
+        vData: vData,
+        ar: 'kosol',
+        items: j,
+        todos: [
+  { text: 'Learn JavaScript' },
+  { text: 'Learn Vue' },
+  { text: 'Build something awesome' }
+]
       };
     },
     methods: {
@@ -101,7 +139,7 @@
 
         // Paksa JQuery Mobile melakukan reinisialisasi
         content.$nextTick(function () {
-          $('#content').trigger('create');
+         // $('#content').trigger('create');
         });
       },
     },
@@ -124,7 +162,7 @@
 
         // Paksa JQuery Mobile melakukan reinisialisasi
         content.$nextTick(function () {
-          $('#content').trigger('create');
+          //$('#content').trigger('create');
         });
       },
     },

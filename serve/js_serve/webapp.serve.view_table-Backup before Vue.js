@@ -11,8 +11,7 @@ var ViewTableModule = (function($) {
 		DatabaseDinningModule.get_data_dinning_table()
 		.then(function(data){
 			console.log('data = '+JSON.stringify(data));
-			//UIUpdateListViewTable(data);
-			//return data
+			UIUpdateListViewTable(data);
 		});
 
 	};
@@ -51,7 +50,7 @@ var ViewTableModule = (function($) {
 	var UIUpdateTableStatus = function(data){
 		console.log('on child change dinning table..');
 		$('#' + data.key).text(data.val().table_status);
-
+		
 	};
 
 	return {
