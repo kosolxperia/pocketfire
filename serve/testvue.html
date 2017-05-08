@@ -71,11 +71,12 @@
 
       <ul data-role="listview" data-inset="true" id="list_view_table">
           <li data-role="list-divider">โต๊ะอาหาร</li>
-          <li v-for="item  in vData" class="ui-li-has-count">
-              {{ item.key }}
-                {{ item.table_status }}<br>
+          <li v-for="table  in vData" v-bind:todo="table">
+              {{ table.key }}
+              {{ table.table_status }}<br>
         </li>
       </ul>
+
   </template>
 
   <!--  Membuat template halaman login -->
@@ -94,7 +95,7 @@
   // Meregistrasi template halaman login menjadi tag <page-login>
   Vue.component('page-view_table', {
     template: '#template-view_table',
-
+    props: ['table'],
     mounted: function () {
         this.$nextTick(function () {
           console.log('next tick');
@@ -117,7 +118,6 @@
 
 
       return {
-        namaHalaman: 'Login Page',
         vData: vData
       };
 
