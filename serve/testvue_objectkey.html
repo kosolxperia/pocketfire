@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>VueJS | JQuery Mobile</title>
+
+  <!-- Libraries -->
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  <link rel="stylesheet" href="../css/jquery.ui-1.8.23.custom.css" />
+  <link rel="stylesheet" href="../css/jquery.mobile-1.4.5.min.css" />
+
+ <script src="../js/jquery-1.12.4.min.js"></script>
+
+  <script src="../js/jquery-ui-1.8.23.custom.min.js"></script>
+  <script src="../js/jquery.mobile-1.4.5.min.js"></script>
+
+  <script src="../js/moment-with-locales.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/3.7.6/firebase.js"></script>
+
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyClhNcjpjioc8SKZZ1qaiZKJKXp4usWctA",
+      authDomain: "pocketrestuarant.firebaseapp.com",
+      databaseURL: "https://pocketrestuarant.firebaseio.com",
+      projectId: "pocketrestuarant",
+      storageBucket: "pocketrestuarant.appspot.com",
+      messagingSenderId: "730805162623"
+    };
+    firebase.initializeApp(config);
+  </script>
+
+  <script src="../firebase/firebase.dinningtable.js"></script>
+  <script src="../firebase/firebase.category.js"></script>
+  <script src="../firebase/firebase.menu.js"></script>
+  <script src="../firebase/firebase.temp_orders.js"></script>
+
+  <script src="js_serve/webapp.serve.view_category.js"></script>
+  <script src="js_serve/webapp.serve.view_menu.js"></script>
+  <script src="js_serve/webapp.serve.view_summary.js"></script>
+  <script src="js_serve/webapp.serve.view_table_order_detail.js"></script>
+  <script src="js_serve/webapp.serve.view_table.js"></script>
+
+  <script src="../js/vue.js"></script>
+
+
+</head>
+<body>
+
+  <div id="header">
+    <div data-role="header" data-position="fixed">
+      <h1>JQuery Mobile Header</h1>
+    </div>
+
+    <div id="content" role="main" class="ui-content">
+      <component :is="page"></component> <!-- Bagian ini adalah container halaman -->
+
+    </div>
+
+    <div data-role="footer" data-position="fixed">
+      <h1>JQuery Mobile Footer</h1>
+    </div>
+  </div>
+
+  <!--  Membuat template halaman dashboard -->
+  <template id="template-view_table">
+
+      <ul data-role="listview" data-inset="true" id="list_view_table">
+          <li data-role="list-divider">โต๊ะอาหาร</li>
+          <li v-for="(value, key) in object">
+             {{ key }} : {{ value }}
+        </li>
+      </ul>
+
+  </template>
+
+  <!--  Membuat template halaman login -->
+  <template id="template-dashboard">
+    <ul data-role="listview" id="list_view_menu" data-inset="true">
+
+			<li data-role="list-divider" id="category-name">โต๊ะอาหาร</li>
+      <li>ar</li>
+
+		</ul>
+
+  </template>
+
+  <script type="text/javascript">
+
+  // Meregistrasi template halaman login menjadi tag <page-login>
+  Vue.component('page-view_table', {
+    template: '#template-view_table',
+    props: ['table'],
+    mounted: function () {
+        this.$nextTick(function () {
+          console.log('next tick');
+      });
+    },
+
+    data:
+
+
+    function () {
+        var vData = [];
+        ViewTableModule.init();
+        DatabaseDinningModule.get_data_dinning_table()
+		.then(function(data){
+
+            data.forEach(function(snapshot){
+                var arsnapshot = snapshot.val();
+                arsnapshot.key=snapshot.key;
+                vData.push(arsnapshot);
+            });
+
+        });
+        var object = {
+          firstName: 'John',
+          lastName: 'Doe',
+          age: 30
+      }
+      return {
+        vData: vData,
+        object: object
+      };
+
+    }
+
+,
+
+    methods: {
+      actionLogin: function () {
+        content.page = 'page-dashboard'; // memindahkan halaman
+
+        // Paksa JQuery Mobile melakukan reinisialisasi
+        content.$nextTick(function () {
+         // $('#content').trigger('create');
+        });
+      },
+    },
+  });
+
+  // Meregistrasi template halaman dashboard menjadi tag <page-dashboard>
+  Vue.component('page-dashboard', {
+    //template: '#template-dashboard',
+    components: {
+			'my-template': 'my-components.vue'
+		},
+    data: function () {
+      return {
+        namaHalaman: 'Dashboard Page',
+      };
+    },
+    methods: {
+      actionBack: function () {
+        content.page = 'page-login'; // memindahkan halaman
+
+        // Paksa JQuery Mobile melakukan reinisialisasi
+        content.$nextTick(function () {
+          //$('#content').trigger('create');
+        });
+      },
+    },
+  });
+
+  var content = new Vue({
+    el: '#content',
+    data: {
+      page: 'page-view_table', // <component> diisi dengan component page-login yg baru dibuat diatas
+      },
+      mounted: function () {
+      this.$nextTick(function () {
+
+      })
+    },
+    });
+
+  </script>
+
+</body>
+</html>
